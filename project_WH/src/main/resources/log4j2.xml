@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	
+	<properties>
+		<property name="name">log</property>
+		<property name="pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5.5p | %-30.30C::%-30.30M:%-5.5L | %msg%n</property>
+	</properties>
+	
+	<Appenders>
+		
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %5p [%c] %m%n" />
+		</Console>
+		<!-- 
+		<RollingFile name="file" fileName="C:/tomcat_log/${name}.log" filePattern="C:/tomcat_log/$${date:yyyy}/$${date:MM}/$${date:dd}/${name}_%d{yyyyMMddHH}.log">
+			<PatternLayout>
+				<pattern>${pattern}</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />Rotated everyday
+			</Policies>
+		</RollingFile>
+		-->
+		
+	</Appenders> 
+	
+	
+	<Loggers>
+		
+		<Logger name="egovframework" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<!-- 
+		<Logger name="java.sql" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		 -->
+		<!-- log SQL with timing information, post execution -->
+		<!-- SQL 연결 상태 출력 -->
+		<Logger name="jdbc.connection" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		
+		<!-- SQL만 출력 -->
+		<Logger name="jdbc.sqlonly" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		
+		<!-- SQL과 경과 시간을 함께 출력 -->
+		<Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+		
+		<!-- SQL결과 상세하기 -->
+		<Logger name="jdbc.audit" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		
+		<!-- SQL결과 상세하게 -->
+		<Logger name="jdbc.resultset" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		
+		<!-- 결과 TABLE 형태로 출력 -->
+		<!-- 
+		<Logger name="jdbc.resultsettable" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		 -->
+		<Logger name="org.springframework" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		
+		
+		<!-- ===================================== -->
+		<!-- Possible Log Levels:                  -->
+		<!-- ===================================== -->
+		<!-- FATAL, ERROR, WARN, INFO, DEBUG, TRACE-->
+		
+		<Root level="INFO">
+			<AppenderRef ref="console" />
+			<!-- <AppenderRef ref="file" /> -->
+		</Root>
+		
+	</Loggers>
+	
+</Configuration>

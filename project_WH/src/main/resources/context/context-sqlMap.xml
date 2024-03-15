@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	<!-- <bean id="sqlMapClient" class="egovframework.rte.psl.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:/dbresource/sql-map-config.xml"/>
+		<property name="dataSource" ref="dataSource"/>
+	</bean> -->
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:/dbresources/sql-map-config.xml" />
+        <property name="mapperLocations">
+        	<list>
+				<value>classpath:/dbresources/sqlmap/mapper/**/*-SQL.xml</value>
+			</list>
+        </property>
+    </bean>
+    
+    <!-- Mybatis Session Template -->
+	<bean id="egov.sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSession"/>
+	</bean>
+	
+</beans>
