@@ -1,6 +1,7 @@
 package servlet.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,9 +17,34 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	@Resource(name="ServletDAO")
 	private ServletDAO dao;
 	
-	@Override
 	public String addStringTest(String str) throws Exception {
 		List<EgovMap> mediaType = dao.selectAll();
 		return str + " -> testImpl ";
 	}
+
+	@Override
+	public List<Map<String, Object>> selectSD() {
+		return dao.selectList("servlet.sdlist");
+	}
+
+	@Override
+	public List<Map<String, Object>> selectSGG() {
+		return dao.selectList("servlet.sgglist");
+	}
+
+	@Override
+	public List<Map<String, Object>> selectBJD() {
+		return dao.selectList("servlet.bjdlist");
+	}
+
+	@Override
+	public List<Map<String, Object>> getSggList(String sdValue) {
+		return dao.selectList("servlet.getSgg",sdValue);
+	}
+
+	@Override
+	public List<Map<String, Object>> getBjdList(String sggValue) {
+		return dao.selectList("servlet.getBjd",sggValue);
+	}
+
 }

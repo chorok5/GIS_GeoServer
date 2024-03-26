@@ -2,14 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="servlet">
 
-	<select id="serVletTest" resultType="EgovMap">
-		<![CDATA[
-			SELECT 
-				FILENAME, FILEREALNAME
-			FROM
-				UPLOAD
-			WHERE
-				1=1
-		]]>
+	<select id="sdlist" resultType="HashMap">
+		SELECT sd_nm
+		FROM tl_sd
 	</select>
+
+	<select id="sgglist" resultType="HashMap">
+		SELECT sgg_nm
+		FROM tl_sgg
+	</select>
+
+	<select id="bjdlist" resultType="HashMap">
+		SELECT bjd_nm
+		FROM tl_bjd
+	</select>
+
+	<select id="getSgg" parameterType="String" resultType="HashMap">
+		SELECT sgg_nm, sgg_cd FROM tl_sgg WHERE sd_nm = #{sdValue}
+	</select>
+
+	<select id="getBjd" parameterType="String" resultType="HashMap">
+		SELECT bjd_nm, bjd_cd FROM tl_bjd WHERE sgg_cd = (SELECT sgg_cd FROM tl_sgg WHERE sgg_cd = tl_bjd.bjd_cd);
+	</select>
+
+	<insert id="uploadFile" parameterType="Map">
+		INSERT INTO "TB_CARBON_B3"
+		VALUES (#{date}, #{addr}, #{newaddr}, #{sgg_cd}, #{bjd_cd}, #{site_div_cd}, #{bun}, #{ji},
+		#{newaddr_cd}, #{newaddr_roadcd}, #{newaddr_undercd}, #{newaddr_mainno}, #{newaddr_subno}, #{used_kwh})
+	</insert>
+
 </mapper>
