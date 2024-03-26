@@ -122,82 +122,95 @@ $("#fileBtn").on("click", function() {
 
 
 $(document).ready(function() {
-	let map = new ol.Map(
-			{ // OpenLayer의 맵 객체를 생성한다.
-				target : 'map', // 맵 객체를 연결하기 위한 target으로 <div>의 id값을 지정해준다.
-				layers : [ // 지도에서 사용 할 레이어의 목록을 정희하는 공간이다.
-				new ol.layer.Tile(
-			{
-			source : new ol.source.OSM(
-			{url : 'https://api.vworld.kr/req/wmts/1.0.0/5FEEDEDB-3705-3E32-8DC7-583B0B613B26/Base/{z}/{y}/{x}.png' // vworld의 지도를 가져온다.
-			})
-			}) ],
-		view : new ol.View({ // 지도가 보여 줄 중심좌표, 축소, 확대 등을 설정한다. 보통은 줌, 중심좌표를 설정하는 경우가 많다.
-			center : ol.proj.fromLonLat([ 128.4,
-					35.7 ]),
-			zoom : 7
+let map = new ol.Map(
+		{ // OpenLayer의 맵 객체를 생성한다.
+			target : 'map', // 맵 객체를 연결하기 위한 target으로 <div>의 id값을 지정해준다.
+			layers : [ // 지도에서 사용 할 레이어의 목록을 정희하는 공간이다.
+			new ol.layer.Tile(
+		{
+		source : new ol.source.OSM(
+		{url : 'https://api.vworld.kr/req/wmts/1.0.0/5FEEDEDB-3705-3E32-8DC7-583B0B613B26/Base/{z}/{y}/{x}.png' // vworld의 지도를 가져온다.
 		})
-	});
+		}) ],
+	view : new ol.View({ // 지도가 보여 줄 중심좌표, 축소, 확대 등을 설정한다. 보통은 줌, 중심좌표를 설정하는 경우가 많다.
+		center : ol.proj.fromLonLat([ 128.4,
+				35.7 ]),
+		zoom : 7
+	})
+});
+});
 
-    // 시도 선택 시 시군구 옵션 업데이트
-    $('#sdSelect').on("change", function() {
-        var sdValue = $(this).val(); 
-        $.ajax({
-            type: 'post',
-            url: '/getSggList.do', 
-            data: { 'sdValue': sdValue }, 
-            dataType : "json",
-            success: function(response) {
+// 시도 선택 시 시군구 옵션 업데이트
+$('#sdSelect').on("change", function() {
+    var sdValue = $(this).val(); 
+    $.ajax({
+        type: 'post',
+        url: '/getSggList.do', 
+        data: { 'sdValue': sdValue }, 
+        dataType : "json",
+        success: function(data) {
+            var sggSelect = $('#sggSelect');
+            sggSelect.empty(); // 기존 옵션 제거
+            sggSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
+            $.each(data, function(index, item) {
+                sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
+            });
 
-                // 시도에 해당하는 레이어 추가
-                map.addLayer(new ol.layer.Tile({
-                    source: new ol.source.TileWMS({
-                        url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                        params: {
-                            'VERSION': '1.1.0',
-                            'LAYERS': 'korea:tl_sd',
-                            'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
-                            'SRS': 'EPSG:3857',
-                            'FORMAT': 'image/png'
-                        },
-                        serverType: 'geoserver'
-                    }),
-                    opacity: 0.5,
-                }));
-            }
-        });
+
+            // 시도에 해당하는 레이어 추가
+            map.addLayer(new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
+                    params: {
+                        'VERSION': '1.1.0',
+                        'LAYERS': 'korea:tl_sd',
+                        'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
+                        'SRS': 'EPSG:3857',
+                        'FORMAT': 'image/png'
+                    },
+                    serverType: 'geoserver'
+                }),
+                opacity: 0.5
+            }));
+        }
     });
+});
 
-    // 시군구 선택 시 법정동 옵션 업데이트
-    $('#sggSelect').on("change", function() {
-        var sggValue = $(this).val();
-        $.ajax({
-            type: 'post',
-            url: '/getBjdList.do',
-            data: { 'sggValue': sggValue },
-            dataType: "json",
-            success: function(response) {
 
-                // 시군구에 해당하는 레이어 추가
-                map.addLayer(new ol.layer.Tile({
-                    source: new ol.source.TileWMS({
-                        url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                        params: {
-                            'VERSION': '1.1.0',
-                            'LAYERS': 'korea:tl_sgg',
-                            'CQL_FILTER': "sgg_nm LIKE '%" + sggValue + "%'",
-                            'SRS': 'EPSG:3857',
-                            'FORMAT': 'image/png'
-                        },
-                        serverType: 'geoserver'
-                    }),
-                    opacity: 0.5
-                }));
-            }
-        });
-     });
-     });
+// 시군구 선택 시 법정동 옵션 업데이트
+$('#sggSelect').on("change", function() {
+    var sggValue = $(this).val();
+    $.ajax({
+        type: 'post',
+        url: '/getBjdList.do',
+        data: { 'sggValue': sggValue },
+        dataType: "json",
+        success: function(response) {
+            var bjdSelect = $('#bjdSelect');
+            bjdSelect.empty(); // 기존 옵션 제거
+            bjdSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
+            $.each(response, function(index, item) {
+                bjdSelect.append('<option value="' + item.value + '">' + item.name + '</option>'); // 응답으로 받은 데이터로 옵션 추가
+            });
 
+            // 시군구에 해당하는 레이어 추가
+            map.addLayer(new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
+                    params: {
+                        'VERSION': '1.1.0',
+                        'LAYERS': 'korea:tl_sgg',
+                        'CQL_FILTER': "sgg_nm LIKE '%" + sggValue + "%'",
+                        'SRS': 'EPSG:3857',
+                        'FORMAT': 'image/png'
+                    },
+                    serverType: 'geoserver'
+                }),
+                opacity: 0.5
+            }));
+        }
+    });
+});
 </script>
 
 </body>
