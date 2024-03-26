@@ -90,37 +90,6 @@
 	<!------------------------------------------------------------------------------------------------>
 <script type="text/javascript">
 
-// 파일 업로드 버튼 클릭 이벤트 핸들러
-$("#fileBtn").on("click", function() {
-    let fileName = $('#file').val();
-    if (fileName == "") {
-        alert("파일을 선택해주세요.");
-        return false;
-    }
-    let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-    if (dotName == 'txt') {
-        $.ajax({
-            url: './t-file2.do',
-            type: 'POST',
-            dataType: 'json',
-            data: new FormData($('#form')[0]),
-            cache: false,
-            contentType: false,
-            processData: false,
-            enctype: 'multipart/form-data',
-            success: function(result) {
-                alert(result);
-            },
-            error: function(Data) {
-            }
-        });
-
-    } else {
-        alert("확장자가 안 맞으면 멈추기");
-    }
-});
-
-
 $(document).ready(function() {
 let map = new ol.Map(
 		{ // OpenLayer의 맵 객체를 생성한다.
@@ -138,7 +107,7 @@ let map = new ol.Map(
 		zoom : 7
 	})
 });
-});
+
 
 // 시도 선택 시 시군구 옵션 업데이트
 $('#sdSelect').on("change", function() {
@@ -210,6 +179,41 @@ $('#sggSelect').on("change", function() {
             }));
         }
     });
+});
+
+
+
+
+
+//파일 업로드 버튼 클릭 이벤트 핸들러
+$("#fileBtn").on("click", function() {
+   let fileName = $('#file').val();
+   if (fileName == "") {
+     alert("파일을 선택해주세요.");
+     return false;
+ }
+ let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+ if (dotName == 'txt') {
+     $.ajax({
+         url: './t-file2.do',
+         type: 'POST',
+         dataType: 'json',
+         data: new FormData($('#form')[0]),
+         cache: false,
+         contentType: false,
+         processData: false,
+         enctype: 'multipart/form-data',
+         success: function(result) {
+             alert(result);
+         },
+         error: function(Data) {
+         }
+     });
+
+ } else {
+     alert("확장자가 안 맞으면 멈추기");
+ }
+});
 });
 </script>
 
