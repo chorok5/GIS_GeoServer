@@ -16,11 +16,13 @@ public class FileServiceImpl extends EgovAbstractServiceImpl implements FileServ
 	private ServletDAO dao;
 	
 	@Override
-	public void uploadFile(List<Map<String, Object>> list) {
-				
-		for (Map<String, Object> map : list) {
-			dao.selectList("servlet.uploadFile",map);
-		}
-	}
-
+    public void uploadFile(List<Map<String, Object>> list) {
+        try {
+            for (Map<String, Object> map : list) {
+                dao.selectList("servlet.uploadFile", map);
+            }
+        } catch (Exception e) {
+            throw new FileUploadException("파일 업로드 실패", e);
+        }
+    }
 }

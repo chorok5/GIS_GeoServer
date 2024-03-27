@@ -12,6 +12,8 @@
 <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 
 <style type="text/css">
 .map {
@@ -40,7 +42,54 @@
 	display: flex;
 	z-index: 1000; /* 옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
 }
-</style>
+.modal {
+  display: none; /* 기본적으로 숨겨진 상태 */
+  position: fixed; /* 스크롤 영역에 영향을 받지 않음 */
+  z-index: 1000; /* 다른 요소 위에 표시 */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* 모달 창 내용이 넘치면 스크롤바 표시 */
+  background-color: rgba(0, 0, 0, 0.4); /* 배경 어둡게 */
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  width: 80%;
+  border: 1px solid #888;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.progress-bar {
+  height: 20px;
+  background-color: #ddd;
+  border-radius: 10px;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 10px;
+}
+
+  </style>
 </head>
 <body>
 	<div class="map-container">
@@ -79,15 +128,110 @@
 		</div>
 	</div>
 <hr>
+
+
+
 <!-- 파일 업로드 폼 -->
-	<form id="form" style="margin-top:300px;">
-		<input type="file" id="file" name="file" accept="txt">
-	</form>
-            <button type="submit" id="fileBtn">업로드</button>
-            
+<form id="form" style="margin-top:300px;">
+  <input type="file" id="file" name="file" accept="txt">
+</form>
+<button type="submit" id="fileBtn">업로드</button>
+
+<!-- 업로드 진행 폼 -->
+<div id="progressModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p>업로드 진행률</p>
+    <div class="progress-bar">
+      <div id="progressBar" class="progress"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 업로드 실패 폼 -->
+<div id="failModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p>파일 업로드에 실패했습니다.</p>
+  </div>
+</div>
      
+<script>
+// 파일 업로드 버튼 클릭 이벤트 핸들러
+$("#fileBtn").on("click", function() {
+    let fileName = $('#file').val();
+    if (fileName == "") {
+        alert("파일을 선택해주세요.");
+        return false;
+    }
+    let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    if (dotName == 'txt') {
+        // 모달 열기
+        $(".modal").css("display", "block");
+
+        // AJAX 요청 전 모달 내용에 프로그래스 바 추가
+        $(".modal-content").html('<div class="progress-bar"><div class="progress"></div></div>');
+
+        $.ajax({
+            url: './t-file2.do',
+            type: 'POST',
+            dataType: 'text', // 반환 타입 변경
+            data: new FormData($('#form')[0]),
+            cache: false,
+            contentType: false,
+            processData: false,
+            enctype: 'multipart/form-data',
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        $(".progress").css("width", percentComplete * 100 + "%");
+                    }
+                }, false);
+                return xhr;
+            },
+            success: function(response) {
+                if (response.trim() === "success") {
+                	// 파일 업로드 성공 시 Swal.fire로 성공 알림창 띄우기
+                    Swal.fire({
+                        icon: 'success',
+                        title: '업로드 성공!',
+                        text: '파일이 성공적으로 업로드되었습니다.'
+                    });
+                } else {
+                    // 파일 업로드 실패 시 Swal.fire로 실패 알림창 띄우기
+                    Swal.fire({
+                        icon: 'error',
+                        title: '업로드 실패',
+                        text: '파일 업로드에 실패했습니다.'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+            	// 서버와의 통신에 실패한 경우 Swal.fire로 실패 알림창 띄우기
+                Swal.fire({
+                    icon: 'error',
+                    title: '업로드 실패',
+                    text: '서버와의 통신에 실패했습니다. 다시 시도해주세요.'
+                });
+            },
+            complete: function() {
+                // AJAX 요청이 완료되면 모달 닫기
+                $(".modal").css("display", "none");
+            }
+        });
+
+    } else {
+        alert("확장자가 안 맞으면 멈추기");
+    }
+});
+
+</script>
+
 	<!------------------------------------------------------------------------------------------------>
 	<!------------------------------------------------------------------------------------------------>
+	
 <script type="text/javascript">
 
 $(document).ready(function() {
@@ -107,6 +251,7 @@ let map = new ol.Map(
 		zoom : 7
 	})
 });
+
 
 
 // 시도 선택 시 시군구 옵션 업데이트
@@ -180,42 +325,9 @@ $('#sggSelect').on("change", function() {
         }
     });
 });
-
-
-
-
-
-//파일 업로드 버튼 클릭 이벤트 핸들러
-$("#fileBtn").on("click", function() {
-   let fileName = $('#file').val();
-   if (fileName == "") {
-     alert("파일을 선택해주세요.");
-     return false;
- }
- let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
- if (dotName == 'txt') {
-     $.ajax({
-         url: './t-file2.do',
-         type: 'POST',
-         dataType: 'json',
-         data: new FormData($('#form')[0]),
-         cache: false,
-         contentType: false,
-         processData: false,
-         enctype: 'multipart/form-data',
-         success: function(result) {
-             alert(result);
-         },
-         error: function(Data) {
-         }
-     });
-
- } else {
-     alert("확장자가 안 맞으면 멈추기");
- }
-});
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>
 </html>

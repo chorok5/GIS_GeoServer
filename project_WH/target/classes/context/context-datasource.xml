@@ -35,7 +35,7 @@
 	
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
     <!-- 파일 업로드 제한 크기 설정 -->
-    <property name="maxUploadSize" value="52428800" /> <!-- 50MB -->
+    <property name="maxUploadSize" value="2147483648" /> <!-- 2기가 -->
     </bean>
     
 	<tx:annotation-driven transaction-manager="transactionManager"/>

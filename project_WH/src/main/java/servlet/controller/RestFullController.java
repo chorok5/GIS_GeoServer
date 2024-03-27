@@ -88,8 +88,8 @@ public class RestFullController {
 		
 		br.close();
 		isr.close();
-		
-		return "1";
+
+		return "success";
 	}
 
 }
