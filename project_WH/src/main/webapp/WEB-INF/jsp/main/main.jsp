@@ -6,32 +6,22 @@
 <title>지도</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
 	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<!-- <script type="text/javascript" src="resource/js/ol.js"></script> OpenLayer 라이브러리
-<link href="resource/css/ol.css" rel="stylesheet" type="text/css" > OpenLayer css -->
 <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/css/geo.css">
 
-
+ 
 <style type="text/css">
 .map {
 	height: 800px;
 	width: 60%;
 	float: right; /* 맵을 우측에 배치합니다. */
 }
-
-/* .select-box-container {
-	display: flex;
-	justify-content: left;
-	align-items: left;
-	height: 50vh;
-} */
 .select-box {
 	margin: 0 20px;
 }
-
 .select-box-container {
 	position: fixed;
 	top: 0;
@@ -42,6 +32,7 @@
 	display: flex;
 	z-index: 1000; /* 옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
 }
+/* 모달 CSS */
 .modal {
   display: none; /* 기본적으로 숨겨진 상태 */
   position: fixed; /* 스크롤 영역에 영향을 받지 않음 */
@@ -89,13 +80,12 @@
   border-radius: 10px;
 }
 
-  </style>
+</style>
 </head>
 <body>
 	<div class="map-container">
 		<div id="map" class="map"></div>
 	</div>
-
 	<div class="select-box-container">
 		<div class="select-box">
 			<h2>시도 선택</h2>
@@ -106,7 +96,6 @@
 				</c:forEach>
 			</select>
 		</div>
-
 		<div class="select-box">
 			<h2>시군구 선택</h2>
 			<select id="sggSelect">
@@ -116,7 +105,6 @@
 				</c:forEach>
 			</select>
 		</div>
-
 		<div class="select-box">
 			<h2>법정동 선택</h2>
 			<select id="bjdSelect">
@@ -129,13 +117,16 @@
 	</div>
 <hr>
 
-
-
 <!-- 파일 업로드 폼 -->
-<form id="form" style="margin-top:300px;">
-  <input type="file" id="file" name="file" accept="txt">
+<div id="dropArea" style="margin-top: 300px; width: 400px; border: 2px dashed #ccc; padding: 50px; text-align: center; cursor: pointer;">
+<form id="form">
+	<label for="file" class="file-label"></label>
+  <input type="file" id="file" name="file" accept=".txt">
 </form>
-<button type="submit" id="fileBtn">업로드</button>
+</div>
+<button type="button" id="fileBtn" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">업로드</button>
+
+
 
 <!-- 업로드 진행 폼 -->
 <div id="progressModal" class="modal">
@@ -161,7 +152,6 @@
 $("#fileBtn").on("click", function() {
     let fileName = $('#file').val();
     if (fileName == "") {
-        alert("파일을 선택해주세요.");
         return false;
     }
     let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
@@ -192,7 +182,10 @@ $("#fileBtn").on("click", function() {
                 return xhr;
             },
             success: function(response) {
-                if (response.trim() === "success") {
+            	// 파일 업로드 성공 또는 실패 시 파일 업로드 폼 리셋
+                $('#form')[0].reset();
+            	
+            	if (response.trim() === "success") {
                 	// 파일 업로드 성공 시 Swal.fire로 성공 알림창 띄우기
                     Swal.fire({
                         icon: 'success',
@@ -215,6 +208,9 @@ $("#fileBtn").on("click", function() {
                     title: '업로드 실패',
                     text: '서버와의 통신에 실패했습니다. 다시 시도해주세요.'
                 });
+             // 파일 업로드 실패 시 파일 업로드 폼 리셋
+                $('#form')[0].reset();
+             
             },
             complete: function() {
                 // AJAX 요청이 완료되면 모달 닫기
@@ -327,6 +323,8 @@ $('#sggSelect').on("change", function() {
 });
 });
 </script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>
