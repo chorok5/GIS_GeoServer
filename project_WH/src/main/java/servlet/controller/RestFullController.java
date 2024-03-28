@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -91,5 +92,25 @@ public class RestFullController {
 
 		return "success";
 	}
+	
+    @GetMapping("/getCityCoordinates.do")
+    public ResponseEntity<Map<String, Double>> getCityCoordinates(@RequestParam("cityName") String cityName) {
+        // 도시 이름을 받아와서 서비스를 호출하여 해당 도시의 좌표를 가져오는 메서드
+        Map<String, Double> coordinates = servletService.getCoordinatesByCityName(cityName);
+        // 좌표를 담은 Map을 ResponseEntity로 반환
+        return ResponseEntity.ok().body(coordinates);
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+

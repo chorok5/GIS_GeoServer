@@ -4,13 +4,15 @@
 <html>
 <head>
 <title>지도</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="/css/geo.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/geo.css"> -->
 
  
 <style type="text/css">
@@ -89,7 +91,7 @@
 	<div class="select-box-container">
 		<div class="select-box">
 			<h2>시도 선택</h2>
-			<select id="sdSelect">
+			<select id="sdSelect" onchange="moveToSelectedCity()">
 				<option value="">선택</option>
 				<c:forEach var="row" items="${sdList}">
 					<option value="${row.sd_nm}">${row.sd_nm}</option>
@@ -118,15 +120,13 @@
 <hr>
 
 <!-- 파일 업로드 폼 -->
-<div id="dropArea" style="margin-top: 300px; width: 400px; border: 2px dashed #ccc; padding: 50px; text-align: center; cursor: pointer;">
+<div id="dropArea" style="margin-top: 300px; margin-left: 100px; width: 500px; border: 2px dashed #ccc; padding: 50px; text-align: center; cursor: pointer;">
 <form id="form">
 	<label for="file" class="file-label"></label>
   <input type="file" id="file" name="file" accept=".txt">
 </form>
 </div>
-<button type="button" id="fileBtn" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">업로드</button>
-
-
+<button type="button" id="fileBtn" style="margin-top: 10px; margin-left: 100px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">업로드</button>
 
 <!-- 업로드 진행 폼 -->
 <div id="progressModal" class="modal">
@@ -165,7 +165,7 @@ $("#fileBtn").on("click", function() {
         $.ajax({
             url: './t-file2.do',
             type: 'POST',
-            dataType: 'text', // 반환 타입 변경
+            dataType: 'text',
             data: new FormData($('#form')[0]),
             cache: false,
             contentType: false,
@@ -223,13 +223,46 @@ $("#fileBtn").on("click", function() {
     }
 });
 
+function moveToSelectedCity() {
+    var selectedCity = document.getElementById("sdSelect").value;
+    getCityCoordinates(selectedCity); // 선택한 도시의 좌표를 가져옵니다.
+}
+
+function getCityCoordinates(cityName) {
+    // 도시 이름을 서버에 전달하고, 서버로부터 좌표를 받아오는 AJAX 요청
+    $.ajax({
+        type: 'GET',
+        url: '/getCityCoordinates.do', // 서버에서 좌표를 가져올 엔드포인트 URL
+        data: { 'cityName': cityName }, // 도시 이름을 데이터로 전달
+        success: function(response) {
+            // 성공적으로 서버로부터 좌표를 받아왔을 때 수행할 작업
+            var coordinates = response; // 서버에서 받은 좌표 데이터
+            console.log('도시 좌표:', coordinates);
+            doPan(coordinates); // 선택한 도시의 좌표로 지도를 이동합니다.
+        },
+        error: function(xhr, status, error) {
+            // 요청이 실패했을 때 수행할 작업
+            console.error('서버 요청 실패:', error);
+            alert("해당 도시의 좌표를 찾을 수 없습니다.");
+        }
+    });
+}
+
+function doPan(location) {
+    var coordinates = location.split(','); // 셀렉트 박스에서 가져온 위치 정보를 ','를 기준으로 분리하여 좌표 배열로 만듭니다.
+    var pan = ol.animation.pan({
+        source: map.getView().getCenter()
+    });
+    map.beforeRender(pan);
+    map.getView().setCenter(ol.proj.fromLonLat([parseFloat(coordinates[0]), parseFloat(coordinates[1])])); // 좌표 배열로부터 좌표를 생성하여 지도를 해당 위치로 패닝합니다.
+}
+
+
 </script>
 
 	<!------------------------------------------------------------------------------------------------>
 	<!------------------------------------------------------------------------------------------------>
-	
 <script type="text/javascript">
-
 $(document).ready(function() {
 let map = new ol.Map(
 		{ // OpenLayer의 맵 객체를 생성한다.
@@ -247,10 +280,7 @@ let map = new ol.Map(
 		zoom : 7
 	})
 });
-
-
-
-// 시도 선택 시 시군구 옵션 업데이트
+//시도 선택 시 시군구 옵션 업데이트
 $('#sdSelect').on("change", function() {
     var sdValue = $(this).val(); 
     $.ajax({
@@ -265,7 +295,6 @@ $('#sdSelect').on("change", function() {
             $.each(data, function(index, item) {
                 sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
             });
-
 
             // 시도에 해당하는 레이어 추가
             map.addLayer(new ol.layer.Tile({
@@ -285,7 +314,6 @@ $('#sdSelect').on("change", function() {
         }
     });
 });
-
 
 // 시군구 선택 시 법정동 옵션 업데이트
 $('#sggSelect').on("change", function() {
@@ -324,8 +352,6 @@ $('#sggSelect').on("change", function() {
 });
 </script>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
 </body>
 </html>
