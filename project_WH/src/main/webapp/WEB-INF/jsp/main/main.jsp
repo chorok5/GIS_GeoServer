@@ -73,8 +73,7 @@
   cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
   color: black;
   text-decoration: none;
 }
@@ -155,7 +154,9 @@
     <span class="close">&times;</span>
     <p>업로드 진행률</p>
     <div class="progress-bar">
-      <div id="progressBar" class="progress"></div>
+      <div id="progressBar" class="progress">
+      <h1>업로드 진행률</h1>
+      </div>
     </div>
   </div>
 </div>
