@@ -16,7 +16,4 @@ public interface ServletService {
 
 	List<Map<String, Object>> getBjdList(String sggValue);
 
-
-	Map<String, Double> getCoordinatesByCityName(String cityName);
-
 }

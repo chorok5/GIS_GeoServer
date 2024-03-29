@@ -30,5 +30,11 @@
 		VALUES (#{date}, #{addr}, #{newaddr}, #{sgg_cd}, #{bjd_cd}, #{site_div_cd}, #{bun}, #{ji},
 		#{newaddr_cd}, #{newaddr_roadcd}, #{newaddr_undercd}, #{newaddr_mainno}, #{newaddr_subno}, #{used_kwh})
 	</insert>
+	
+	<select id="getCoordinatesByCityName" resultType="java.util.Map">
+        SELECT latitude, longitude
+        FROM city_coordinates
+        WHERE city_name = #{cityName}
+    </select>
 
 </mapper>

@@ -91,7 +91,7 @@
 	<div class="select-box-container">
 		<div class="select-box">
 			<h2>시도 선택</h2>
-			<select id="sdSelect" onchange="moveToSelectedCity()">
+			<select id="sdSelect">
 				<option value="">선택</option>
 				<c:forEach var="row" items="${sdList}">
 					<option value="${row.sd_nm}">${row.sd_nm}</option>
@@ -223,40 +223,6 @@ $("#fileBtn").on("click", function() {
     }
 });
 
-function moveToSelectedCity() {
-    var selectedCity = document.getElementById("sdSelect").value;
-    getCityCoordinates(selectedCity); // 선택한 도시의 좌표를 가져옵니다.
-}
-
-function getCityCoordinates(cityName) {
-    // 도시 이름을 서버에 전달하고, 서버로부터 좌표를 받아오는 AJAX 요청
-    $.ajax({
-        type: 'GET',
-        url: '/getCityCoordinates.do', // 서버에서 좌표를 가져올 엔드포인트 URL
-        data: { 'cityName': cityName }, // 도시 이름을 데이터로 전달
-        success: function(response) {
-            // 성공적으로 서버로부터 좌표를 받아왔을 때 수행할 작업
-            var coordinates = response; // 서버에서 받은 좌표 데이터
-            console.log('도시 좌표:', coordinates);
-            doPan(coordinates); // 선택한 도시의 좌표로 지도를 이동합니다.
-        },
-        error: function(xhr, status, error) {
-            // 요청이 실패했을 때 수행할 작업
-            console.error('서버 요청 실패:', error);
-            alert("해당 도시의 좌표를 찾을 수 없습니다.");
-        }
-    });
-}
-
-function doPan(location) {
-    var coordinates = location.split(','); // 셀렉트 박스에서 가져온 위치 정보를 ','를 기준으로 분리하여 좌표 배열로 만듭니다.
-    var pan = ol.animation.pan({
-        source: map.getView().getCenter()
-    });
-    map.beforeRender(pan);
-    map.getView().setCenter(ol.proj.fromLonLat([parseFloat(coordinates[0]), parseFloat(coordinates[1])])); // 좌표 배열로부터 좌표를 생성하여 지도를 해당 위치로 패닝합니다.
-}
-
 
 </script>
 
@@ -280,42 +246,68 @@ let map = new ol.Map(
 		zoom : 7
 	})
 });
-//시도 선택 시 시군구 옵션 업데이트
-$('#sdSelect').on("change", function() {
-    var sdValue = $(this).val(); 
-    $.ajax({
-        type: 'post',
-        url: '/getSggList.do', 
-        data: { 'sdValue': sdValue }, 
-        dataType : "json",
-        success: function(data) {
-            var sggSelect = $('#sggSelect');
-            sggSelect.empty(); // 기존 옵션 제거
-            sggSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
-            $.each(data, function(index, item) {
-                sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
-            });
 
-            // 시도에 해당하는 레이어 추가
-            map.addLayer(new ol.layer.Tile({
-                source: new ol.source.TileWMS({
-                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                    params: {
-                        'VERSION': '1.1.0',
-                        'LAYERS': 'korea:tl_sd',
-                        'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
-                        'SRS': 'EPSG:3857',
-                        'FORMAT': 'image/png'
-                    },
-                    serverType: 'geoserver'
-                }),
-                opacity: 0.5
-            }));
-        }
-    });
+// 레이어 변수 선언
+var sdLayer; 
+var sggLayer; 
+var bjdLayer;
+
+
+//시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가
+$('#sdSelect').on("change", function() {
+ var sdValue = $(this).val(); 
+ $.ajax({
+     type: 'post',
+     url: '/getSggList.do', 
+     data: { 'sdValue': sdValue }, 
+     dataType : "json",
+     success: function(data) {
+         var sggSelect = $('#sggSelect');
+         sggSelect.empty(); // 기존 옵션 제거
+         sggSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
+         $.each(data, function(index, item) {
+             sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
+         });
+
+         // 새로운 시도 레이어 생성
+         var newSdLayer = new ol.layer.Tile({
+             source: new ol.source.TileWMS({
+                 url: 'http://localhost/geoserver/korea/wms?service=WMS',
+                 params: {
+                     'VERSION': '1.1.0',
+                     'LAYERS': 'korea:tl_sd',
+                     'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
+                     'SRS': 'EPSG:3857',
+                     'FORMAT': 'image/png'
+                 },
+                 serverType: 'geoserver'
+             }),
+             opacity: 0.5
+         });
+
+         // 기존에 추가된 시도 레이어가 있다면 삭제
+         if (sdLayer) {
+             map.removeLayer(sdLayer);
+         }
+
+         // 새로운 시도 레이어 변수에 할당
+         sdLayer = newSdLayer;
+
+         // 새로운 시도 레이어 추가
+         map.addLayer(sdLayer);
+         
+         // 기존에 추가된 시군구 레이어가 있다면 삭제
+         var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
+             return layer.get('name') === 'sggLayer';
+         });
+         if (sggLayerToRemove) {
+             map.removeLayer(sggLayerToRemove);
+         }
+     }
+ });
 });
 
-// 시군구 선택 시 법정동 옵션 업데이트
+//시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가
 $('#sggSelect').on("change", function() {
     var sggValue = $(this).val();
     $.ajax({
@@ -330,9 +322,25 @@ $('#sggSelect').on("change", function() {
             $.each(response, function(index, item) {
                 bjdSelect.append('<option value="' + item.value + '">' + item.name + '</option>'); // 응답으로 받은 데이터로 옵션 추가
             });
+            
+            // 기존에 추가된 시도 레이어가 있다면 삭제
+            var sdLayerToRemove = map.getLayers().getArray().find(function(layer) {
+                return layer.get('name') === 'sdLayer';
+            });
+            if (sdLayerToRemove) {
+                map.removeLayer(sdLayerToRemove);
+            }
+            
+            // 기존에 추가된 시군구 레이어가 있다면 삭제
+            var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
+                return layer.get('name') === 'sggLayer';
+            });
+            if (sggLayerToRemove) {
+                map.removeLayer(sggLayerToRemove);
+            }
 
-            // 시군구에 해당하는 레이어 추가
-            map.addLayer(new ol.layer.Tile({
+            // 새로운 시군구 레이어 생성
+            var newSggLayer = new ol.layer.Tile({
                 source: new ol.source.TileWMS({
                     url: 'http://localhost/geoserver/korea/wms?service=WMS',
                     params: {
@@ -345,10 +353,16 @@ $('#sggSelect').on("change", function() {
                     serverType: 'geoserver'
                 }),
                 opacity: 0.5
-            }));
+            });
+
+         // 새로운 시군구 레이어 변수에 할당
+            newSggLayer.set('name', 'sggLayer'); // 레이어에 이름 설정
+            map.addLayer(newSggLayer);
         }
     });
 });
+
+
 });
 </script>
 

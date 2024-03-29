@@ -48,11 +48,4 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	}
 
 
-	@Override
-	public Map<String, Double> getCoordinatesByCityName(String cityName) {
-		// 좌표를 return 해야함. 
-		return null;
-	}
-
-
 }
