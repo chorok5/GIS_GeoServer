@@ -3,18 +3,26 @@
 <mapper namespace="servlet">
 
 	<select id="sdlist" resultType="HashMap">
-		SELECT sd_nm
-		FROM tl_sd
+		SELECT sd_nm, sd_cd,
+		ST_AsText(ST_Transform(ST_Centroid(geom), 4326)) AS geom
+		FROM tl_sd;
 	</select>
 
 	<select id="sgglist" resultType="HashMap">
-		SELECT sgg_nm
-		FROM tl_sgg
+	  SELECT REPLACE(g.sgg_nm, CONCAT(s.sd_nm, ' '), '') AS sgg_nm, 
+      g.sgg_cd, 
+      ST_AsText(ST_Transform(ST_Centroid(g.geom), 4326)) AS geom 
+      FROM tl_sgg g
+      JOIN tl_sd s ON (s.sd_nm = g.sd_nm)
+      WHERE s.sd_cd = #{sdValue};
 	</select>
 
 	<select id="bjdlist" resultType="HashMap">
-		SELECT bjd_nm
-		FROM tl_bjd
+		SELECT DISTINCT b.bjd_nm, b.bjd_cd, 
+				ST_AsText(ST_Transform(ST_Centroid(b.geom), 4326)) AS geom 
+		FROM tl_bjd b
+		JOIN tl_sgg c ON b.sgg_cd = c.sgg_cd
+		WHERE c.sgg_cd = #{sggValue};
 	</select>
 
 	<select id="getSgg" parameterType="String" resultType="HashMap">
@@ -22,7 +30,10 @@
 	</select>
 
 	<select id="getBjd" parameterType="String" resultType="HashMap">
-		SELECT bjd_nm, bjd_cd FROM tl_bjd WHERE sgg_cd = (SELECT sgg_cd FROM tl_sgg WHERE sgg_cd = tl_bjd.bjd_cd);
+		SELECT DISTINCT b.bjd_nm, b.bjd_cd  
+		FROM tl_bjd b
+		JOIN tl_sgg c ON b.sgg_cd = c.sgg_cd
+		WHERE c.sgg_cd = #{sggValue};
 	</select>
 
 	<insert id="uploadFile" parameterType="Map">
@@ -31,10 +42,4 @@
 		#{newaddr_cd}, #{newaddr_roadcd}, #{newaddr_undercd}, #{newaddr_mainno}, #{newaddr_subno}, #{used_kwh})
 	</insert>
 	
-	<select id="getCoordinatesByCityName" resultType="java.util.Map">
-        SELECT latitude, longitude
-        FROM city_coordinates
-        WHERE city_name = #{cityName}
-    </select>
-
 </mapper>

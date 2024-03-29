@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,9 +36,9 @@ public class RestFullController {
     public List<Map<String, Object>> getSggList(@RequestParam("sdValue") String sdValue) {
       List<Map<String, Object>> list = servletService.getSggList(sdValue);
       System.out.println(list);
-      System.out.println("출력 확인문 ");
       return list;
     }
+    
     @PostMapping("/getBjdList.do")
     public List<Map<String, Object>> getBjdList(@RequestParam("sggValue") String sggValue) {
     	List<Map<String, Object>> list1 = servletService.getBjdList(sggValue);
@@ -92,9 +91,6 @@ public class RestFullController {
 
 		return "success";
 	}
-	
-
-
 }
 
 

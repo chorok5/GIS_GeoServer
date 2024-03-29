@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -34,7 +40,10 @@
 	display: flex;
 	z-index: 1000; /* 옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
 }
-/* 모달 CSS */
+
+/*****************************************************************/
+/*************************** 모달 CSS  ***************************/
+/*****************************************************************/
 .modal {
   display: none; /* 기본적으로 숨겨진 상태 */
   position: fixed; /* 스크롤 영역에 영향을 받지 않음 */
@@ -78,10 +87,9 @@
 
 .progress {
   height: 100%;
-  background-color: #4caf50;
+  background-color: #B686F3;
   border-radius: 10px;
 }
-
 </style>
 </head>
 <body>
@@ -95,13 +103,16 @@
 <!------------------------------------------------------------------------------------------------->
 <!---------------------------- 시도, 시군구, 법정동 셀렉트박스 ------------------------------------>
 <!------------------------------------------------------------------------------------------------->	
+	
+	<!-- ${row.geom } 추가해야지 지도 이동됨.... -->
+	
 	<div class="select-box-container">
 		<div class="select-box">
 			<h2>시도 선택</h2>
 			<select id="sdSelect">
 				<option value="">선택</option>
 				<c:forEach var="row" items="${sdList}">
-					<option value="${row.sd_nm}">${row.sd_nm}</option>
+					<option value="${row.sd_nm}, ${row.geom }">${row.sd_nm}</option>
 				</c:forEach>
 			</select>
 		</div>
@@ -119,7 +130,7 @@
 			<select id="bjdSelect">
 				<option value="">선택</option>
 				<c:forEach var="row" items="${bjdList}">
-					<option value="${row.bjd_nm}">${row.bjd_nm}</option>
+					<option value="${row.bjd_nm}, ${row.geom }">${row.bjd_nm}</option>
 				</c:forEach>
 			</select>
 		</div>
@@ -148,6 +159,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- 업로드 실패 폼 -->
 <div id="failModal" class="modal">
@@ -220,14 +232,12 @@ $("#fileBtn").on("click", function() {
                 });
              // 파일 업로드 실패 시 파일 업로드 폼 리셋
                 $('#form')[0].reset();
-             
             },
             complete: function() {
                 // AJAX 요청이 완료되면 모달 닫기
                 $(".modal").css("display", "none");
             }
         });
-
     } else {
         alert("확장자가 안 맞으면 멈추기");
     }
@@ -256,67 +266,106 @@ let map = new ol.Map(
 	})
 });
 
-// 레이어 변수 선언
+
+
+//<!------------------------------------------------------------------------------------------------->
+//<!---------------- 시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가 ------------------->
+//<!------------------------------------------------------------------------------------------------->
+
+//레이어 변수 선언
 var sdLayer; 
 var sggLayer; 
 var bjdLayer;
 
-//시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가
 $('#sdSelect').on("change", function() {
- var sdValue = $(this).val(); 
- $.ajax({
-     type: 'post',
-     url: '/getSggList.do', 
-     data: { 'sdValue': sdValue }, 
-     dataType : "json",
-     success: function(data) {
-         var sggSelect = $('#sggSelect');
-         sggSelect.empty(); // 기존 옵션 제거
-         sggSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
-         $.each(data, function(index, item) {
-             sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
-         });
+    var selectSiValue = $(this).val().split(',')[0];
+    // alert(selectSiValue);
+    
+    var sdValue = $(this).val(); 
+    
+    //--------------- 선택된 시/도의 geom값을 가져와서 지도에 표시 ---------------//
+    var datas = $(this).val(); // value 값 가져오기
+    var values = datas.split(",");
+    var sdValue = values[0]; // sido 코드
+       
+    var geom = values[1]; // x 좌표
+    // alert("sido 좌표값" + sdValue  + geom);
+    var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
+    var matches = regex.exec(geom);
+    var xCoordinate, yCoordinate;
+     
+    if (matches) {
+        xCoordinate = parseFloat(matches[1]); // x 좌표
+        yCoordinate = parseFloat(matches[2]); // y 좌표
+    } else {
+        alert("GEOM값 가져오기 실패!");
+    }
 
-         // 새로운 시도 레이어 생성
-         var newSdLayer = new ol.layer.Tile({
-             source: new ol.source.TileWMS({
-                 url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                 params: {
-                     'VERSION': '1.1.0',
-                     'LAYERS': 'korea:tl_sd',
-                     'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
-                     'SRS': 'EPSG:3857',
-                     'FORMAT': 'image/png'
-                 },
-                 serverType: 'geoserver'
-             }),
-             opacity: 0.5
-         });
+    var sidoCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
+    map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
+    map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
+    
+    //--------------- 시도 선택 시 시군구 불러오기 옵션 & 레이어 추가 ---------------//
+    $.ajax({
+        type: 'post',
+        url: '/getSggList.do', 
+        data: { 'sdValue': sdValue }, 
+        dataType: "json",
+        success: function(data) {
+            var sggSelect = $('#sggSelect');
+            sggSelect.empty();
+            sggSelect.append('<option value="">선택</option>');
+            $.each(data, function(index, item) {
+                sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
+            });
 
-         // 기존에 추가된 시도 레이어가 있다면 삭제
-         if (sdLayer) {
-             map.removeLayer(sdLayer);         }
+            // 새로운 시도 레이어 생성
+            var newSdLayer = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
+                    params: {
+                        'VERSION': '1.1.0',
+                        'LAYERS': 'korea:tl_sd',
+                        'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
+                        'SRS': 'EPSG:3857',
+                        'FORMAT': 'image/png'
+                    },
+                    serverType: 'geoserver'
+                }),
+                opacity: 0.5
+            });
 
-         // 새로운 시도 레이어 변수에 할당
-         sdLayer = newSdLayer;
+             // 기존에 추가된 시도 레이어가 있다면 삭제
+            if (sdLayer) {
+                map.removeLayer(sdLayer);         
+            } 
 
-         // 새로운 시도 레이어 추가
-         map.addLayer(sdLayer);
-         
-         // 기존에 추가된 시군구 레이어가 있다면 삭제
-         var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
-             return layer.get('name') === 'sggLayer';
-         });
-         if (sggLayerToRemove) {
-             map.removeLayer(sggLayerToRemove);
-         }
-     }
- });
+            // 새로운 시도 레이어 변수에 할당
+            sdLayer = newSdLayer;
+
+            // 새로운 시도 레이어 추가
+            map.addLayer(sdLayer);
+            
+            // 기존에 추가된 시군구 레이어가 있다면 삭제
+            var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
+                return layer.get('name') === 'sggLayer';
+            });
+            if (sggLayerToRemove) {
+                map.removeLayer(sggLayerToRemove);
+            }
+        }
+    });
 });
 
-//시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가
+
+//<!------------------------------------------------------------------------------------------------->
+//<!-------------- 시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ----------------->
+//<!------------------------------------------------------------------------------------------------->
 $('#sggSelect').on("change", function() {
     var sggValue = $(this).val();
+
+    
+    //--------------- 시군구 선택 시 법정동 불러오기 옵션 & 레이어 추가 ---------------//
     $.ajax({
         type: 'post',
         url: '/getBjdList.do',
@@ -324,19 +373,12 @@ $('#sggSelect').on("change", function() {
         dataType: "json",
         success: function(response) {
             var bjdSelect = $('#bjdSelect');
-            bjdSelect.empty(); // 기존 옵션 제거
-            bjdSelect.append('<option value="">선택</option>'); // 기본 선택 옵션 추가
+            bjdSelect.empty();
+            bjdSelect.append('<option value="">선택</option>');
             $.each(response, function(index, item) {
                 bjdSelect.append('<option value="' + item.value + '">' + item.name + '</option>'); // 응답으로 받은 데이터로 옵션 추가
             });
             
-            // 기존에 추가된 시도 레이어가 있다면 삭제
-            var sdLayerToRemove = map.getLayers().getArray().find(function(layer) {
-                return layer.get('name') === 'sdLayer';
-            });
-            if (sdLayerToRemove) {
-                map.removeLayer(sdLayerToRemove);
-            }
             
             // 기존에 추가된 시군구 레이어가 있다면 삭제
             var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
@@ -368,6 +410,58 @@ $('#sggSelect').on("change", function() {
         }
     });
 });
+
+
+//<!------------------------------------------------------------------------------------------------->
+//<!---------------------- 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ------------------------>
+//<!------------------------------------------------------------------------------------------------->
+$('#bjdSelect').change(function() {
+    var bjdSelectedValue = $(this).val().split(',')[0];
+    var bjdSelectedText = $(this).find('option:selected').text();
+    updateAddress(null, null, bjdSelectedText); //상단 법정동 노출
+
+    //여기 좌표코드 설정
+    var datas = $(this).val(); // value 값 가져오기
+    var values = datas.split(",");
+    var bjdValue = values[0]; // sido 코드
+
+    var geom = values[1]; // x 좌표
+    var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
+    var matches = regex.exec(geom);
+    var xCoordinate, yCoordinate;
+
+    if (matches) {
+        xCoordinate = parseFloat(matches[1]); // x 좌표
+        yCoordinate = parseFloat(matches[2]); // y 좌표
+    } else {
+        alert("GEOM값 가져오기 실패!");
+    }
+
+    var bjdCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
+    map.getView().setCenter(bjdCenter); // 중심좌표 기준으로 보기
+    map.getView().setZoom(13); // 중심좌표 기준으로 줌 설정
+
+
+  //--------------- 법정동 불러오기 옵션 & 레이어 추가 ---------------//
+            var newBjdLayer = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url : 'http://localhost:8080/geoserver/korea/wms?service=WMS', // 1. 레이어 URL
+                    params : {
+                        'VERSION' : '1.1.0', // 2. 버전
+                        'LAYERS' : 'korea:tl_bjd', // 3. 작업공간:레이어 명
+                        'CQL_FILTER': "bjd_nm LIKE '%" + bjdValue + "%'",
+                        'SRS': 'EPSG:3857',
+                        'FORMAT': 'image/png'
+                    },
+                    serverType : 'geoserver',
+                })
+        });
+         // 새로운 Bjd 레이어 변수에 할당
+            newBjdLayer.set('name', 'bjdLayer'); // 레이어에 이름 설정
+            map.addLayer(newBjdLayer);
+
+});
+
 });
 </script>
 

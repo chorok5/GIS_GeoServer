@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
@@ -16,6 +17,7 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	
 	@Resource(name="ServletDAO")
 	private ServletDAO dao;
+	
 	
 	public String addStringTest(String str) throws Exception {
 		List<EgovMap> mediaType = dao.selectAll();
@@ -40,6 +42,7 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	@Override
 	public List<Map<String, Object>> getSggList(String sdValue) {
 		return dao.selectList("servlet.getSgg",sdValue);
+		
 	}
 
 	@Override
