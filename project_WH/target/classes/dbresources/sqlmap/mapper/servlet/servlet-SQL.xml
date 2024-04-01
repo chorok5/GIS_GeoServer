@@ -42,10 +42,10 @@
 		#{newaddr_cd}, #{newaddr_roadcd}, #{newaddr_undercd}, #{newaddr_mainno}, #{newaddr_subno}, #{used_kwh})
 	</insert>
 	
-	
+<!-- 	
 	<select id="getChartData" resultType="HashMap">
             SELECT sgg_cd, SUM(used_kwh) AS total_used_kwh
             FROM "TB_CARBON_B3" 
             GROUP BY sgg_cd;
-    </select>
+    </select> -->
 </mapper>

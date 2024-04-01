@@ -443,11 +443,11 @@ $('#bjdSelect').change(function() {
             map.addLayer(newBjdLayer);
 	});
 });
-</script>
+</script><%-- 
 <!------------------------------------------------------------->
 <!------------------------ 차트 그리기 ------------------------>
 <!------------------------------------------------------------->
-<div id="chartContainer" style="width: 400px; height: 400px;">
+<div id="chartContainer" style="width: 1500px; height: 1500px; margin-top:100px; margin-left:50px;">
 	<canvas id="myChart"></canvas>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -500,7 +500,7 @@ $('#bjdSelect').change(function() {
         }
     });
 </script>
-
+ --%>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

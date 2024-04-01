@@ -50,10 +50,9 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 		return dao.selectList("servlet.getBjd",sggValue);
 	}
 
-	@Override
-	public List<Map<String, Object>> getChartData() {
-		return dao.selectList("servlet.getChartData");
-	}
-
+	/*
+	 * @Override public List<Map<String, Object>> getChartData() { return
+	 * dao.selectList("servlet.getChartData"); }
+	 */
 
 }

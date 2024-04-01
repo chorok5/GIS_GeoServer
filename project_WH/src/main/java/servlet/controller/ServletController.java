@@ -34,13 +34,13 @@ public class ServletController {
 		return "main/main";
 	}	
 	
-	@GetMapping("/chart.do")
-	public String showChart(Model model) {
-	    List<Map<String, Object>> chartData = servletService.getChartData();
-	    model.addAttribute("chartData", chartData);
-	    
-	    System.out.println(chartData);
-	    
-	    return "main/main";
-	}
+	/*
+	 * @PostMapping("/chart.do") public String showChart(Model model) {
+	 * List<Map<String, Object>> chartData = servletService.getChartData();
+	 * model.addAttribute("chartData", chartData);
+	 * 
+	 * System.out.println(chartData);
+	 * 
+	 * return "main/main"; }
+	 */
 }

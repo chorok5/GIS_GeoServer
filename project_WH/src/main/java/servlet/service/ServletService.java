@@ -16,7 +16,7 @@ public interface ServletService {
 
 	List<Map<String, Object>> getBjdList(String sggValue);
 
-	List<Map<String, Object>> getChartData();
+	//List<Map<String, Object>> getChartData();
 
 }
 
