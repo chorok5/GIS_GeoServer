@@ -6,7 +6,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import servlet.service.ServletService;
@@ -30,4 +33,14 @@ public class ServletController {
         
 		return "main/main";
 	}	
+	
+	@GetMapping("/chart.do")
+	public String showChart(Model model) {
+	    List<Map<String, Object>> chartData = servletService.getChartData();
+	    model.addAttribute("chartData", chartData);
+	    
+	    System.out.println(chartData);
+	    
+	    return "main/main";
+	}
 }

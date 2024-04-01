@@ -6,6 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -18,9 +19,10 @@
 	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<!-- <link rel="stylesheet" type="text/css" href="/css/geo.css"> -->
+<script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
- 
 <style type="text/css">
 .map {
 	height: 800px;
@@ -60,8 +62,8 @@
   position: relative;
   background-color: #fff;
   margin: 15% auto;
-  padding: 20px;
-  width: 80%;
+  padding: 30px;
+  width: 50%;
   border: 1px solid #888;
 }
 
@@ -88,6 +90,9 @@
   height: 100%;
   background-color: #B686F3;
   border-radius: 10px;
+  padding: 5px;
+  text-align: center; /* 텍스트를 가운데 정렬 */
+  line-height: 20px; /* 수직 가운데 정렬 */
 }
 </style>
 </head>
@@ -151,16 +156,14 @@
 <!-- 업로드 진행 폼 -->
 <div id="progressModal" class="modal">
   <div class="modal-content">
+  업로드 진행중
     <span class="close">&times;</span>
-    <p>업로드 진행률</p>
     <div class="progress-bar">
       <div id="progressBar" class="progress">
-      <h1>업로드 진행률</h1>
       </div>
     </div>
   </div>
 </div>
-
 
 <!-- 업로드 실패 폼 -->
 <div id="failModal" class="modal">
@@ -304,7 +307,7 @@ $('#sdSelect').on("change", function() {
 
     var sidoCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
     map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
-    map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
+    map.getView().setZoom(9); // 중심좌표 기준으로 줌 설정
     
     //--------------- 시도 선택 시 시군구 불러오기 옵션 & 레이어 추가 ---------------//
     $.ajax({
@@ -421,28 +424,6 @@ $('#bjdSelect').change(function() {
     var bjdSelectedText = $(this).find('option:selected').text();
     updateAddress(null, null, bjdSelectedText); //상단 법정동 노출
 
-    //여기 좌표코드 설정
-    var datas = $(this).val(); // value 값 가져오기
-    var values = datas.split(",");
-    var bjdValue = values[0]; // sido 코드
-
-    var geom = values[1]; // x 좌표
-    var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
-    var matches = regex.exec(geom);
-    var xCoordinate, yCoordinate;
-
-    if (matches) {
-        xCoordinate = parseFloat(matches[1]); // x 좌표
-        yCoordinate = parseFloat(matches[2]); // y 좌표
-    } else {
-        alert("GEOM값 가져오기 실패!");
-    }
-
-    var bjdCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
-    map.getView().setCenter(bjdCenter); // 중심좌표 기준으로 보기
-    map.getView().setZoom(13); // 중심좌표 기준으로 줌 설정
-
-
   //--------------- 법정동 불러오기 옵션 & 레이어 추가 ---------------//
             var newBjdLayer = new ol.layer.Tile({
                 source: new ol.source.TileWMS({
@@ -460,11 +441,66 @@ $('#bjdSelect').change(function() {
          // 새로운 Bjd 레이어 변수에 할당
             newBjdLayer.set('name', 'bjdLayer'); // 레이어에 이름 설정
             map.addLayer(newBjdLayer);
-
-});
-
+	});
 });
 </script>
+<!------------------------------------------------------------->
+<!------------------------ 차트 그리기 ------------------------>
+<!------------------------------------------------------------->
+<div id="chartContainer" style="width: 400px; height: 400px;">
+	<canvas id="myChart"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // JSP 코드를 사용하여 chartData를 가져옵니다.
+    var chartData = [
+        <c:forEach items="${chartData}" var="data">
+            {
+                sgg_cd: '<c:out value="${data.sgg_cd}"/>',
+                total_used_kwh: '<c:out value="${data.total_used_kwh}"/>'
+            },
+        </c:forEach>
+    ];
+
+    var labels = chartData.map(function(item) { return item['sgg_cd']; }); // 'sgg_cd' 키로 변경
+    var data = chartData.map(function(item) { return item['total_used_kwh']; }); // 'total_used_kwh' 키로 변경
+
+	console.log(labels);
+	console.log(data);
+    
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Used kWh',
+                data: data, 
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    },
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
