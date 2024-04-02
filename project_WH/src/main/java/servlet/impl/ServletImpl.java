@@ -18,7 +18,6 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	@Resource(name="ServletDAO")
 	private ServletDAO dao;
 	
-	
 	public String addStringTest(String str) throws Exception {
 		List<EgovMap> mediaType = dao.selectAll();
 		return str + " -> testImpl ";
@@ -50,9 +49,13 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 		return dao.selectList("servlet.getBjd",sggValue);
 	}
 
-	/*
-	 * @Override public List<Map<String, Object>> getChartData() { return
-	 * dao.selectList("servlet.getChartData"); }
-	 */
+    @Override public List<Map<String, Object>> getChartData() { return
+	dao.selectList("servlet.getChartData"); }
+
+	@Override
+	public List<Map<String, Object>> bjdList(String bjdValue) {
+		return dao.selectList("servlet.bjdlist",bjdValue);
+	}
+	 
 
 }

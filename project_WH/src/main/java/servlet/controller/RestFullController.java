@@ -42,11 +42,18 @@ public class RestFullController {
     
     @PostMapping("/getBjdList.do")
     public List<Map<String, Object>> getBjdList(@RequestParam("sggValue") String sggValue) {
-    	List<Map<String, Object>> list1 = servletService.getBjdList(sggValue);
-    	System.out.println(list1);
-    	return list1;
+        List<Map<String, Object>> bjdList = servletService.getBjdList(sggValue);
+        System.out.println(bjdList);
+        return bjdList;
     }
+
     
+    @PostMapping("/bjdList.do")
+    public List<Map<String, Object>> bjdList(@RequestParam("bjdValue") String bjdValue) {
+    	List<Map<String, Object>> list2 = servletService.bjdList(bjdValue);
+    	System.out.println(list2);
+    	return list2;
+    }
     
 	@RequestMapping(value = "/t-file.do", method = RequestMethod.GET)
 	public String t_file() {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.ws.rs.GET;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,13 +35,15 @@ public class ServletController {
 		return "main/main";
 	}	
 	
-	/*
-	 * @PostMapping("/chart.do") public String showChart(Model model) {
-	 * List<Map<String, Object>> chartData = servletService.getChartData();
-	 * model.addAttribute("chartData", chartData);
-	 * 
-	 * System.out.println(chartData);
-	 * 
-	 * return "main/main"; }
-	 */
+	
+	  @GetMapping("/chart.do") 
+	  public String showChart(Model model) {
+	  List<Map<String, Object>> chartData = servletService.getChartData();
+	  model.addAttribute("chartData", chartData);
+	  
+	  System.out.println(chartData);
+	  
+	  return "main/main"; 
+	  }
+	 
 }

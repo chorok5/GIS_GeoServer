@@ -18,10 +18,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
 	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500'">
+
+<link rel="stylesheet" type="text/css" href="/css/navbar.css">
+
 
 <style type="text/css">
 .map {
@@ -31,16 +38,21 @@
 }
 .select-box {
 	margin: 0 20px;
+	margin-bottom: 20px;
+}
+.select-box select {
+  width: 200px; /* 모든 셀렉트 박스 너비 200px 설정 */
 }
 .select-box-container {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
+	top: 100px;
+	left: 250px;
+	margin-right:0px;
+	width: 300px;
 	background-color: white;
 	padding: 10px;
-	display: flex;
-	z-index: 1000; /* 옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
+	display: none;
+	/*z-index: 1000;  옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
 }
 
 /*****************************************************************/
@@ -94,9 +106,52 @@
   text-align: center; /* 텍스트를 가운데 정렬 */
   line-height: 20px; /* 수직 가운데 정렬 */
 }
+.header {
+  position: fixed; /* 헤더를 맨 위에 고정시킵니다. */
+  top: 0; /* 화면의 맨 위에 헤더를 배치합니다. */
+  width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
+  background-color: #f0f0f0; /* 헤더의 배경색을 설정합니다. */
+  z-index: 1000; /* 다른 요소보다 위에 표시되도록 설정합니다. */
+  }
+ .content {
+ margin-top: 100px; /* 헤더의 아래에 배치하기 위해 헤더의 높이만큼 여백을 줍니다. */
+ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
+  }
+  
+.dropArea {
+    display: none;
+    margin-top: 100px;
+    margin-left: 300px;
+    width: 300px;
+    border: 2px dashed #ccc;
+    padding: 50px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.fileBtn {
+	display: none;
+    margin-top: 10px;
+    margin-left: 300px;
+    width: 100px;
+    padding: 10px 20px; 
+    background-color: #4CAF50; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+}
+
 </style>
+
 </head>
 <body>
+<div class="header">
+	<h1 style="height:50px">header</h1>
+</div>
+
+<div class="content">
+
 <!------------------------------------------------------------------------------------------------->
 <!----------------------------------------- 기본 맵 ----------------------------------------------->
 <!------------------------------------------------------------------------------------------------->
@@ -104,54 +159,125 @@
 		<div id="map" class="map"></div>
 	</div>
 	
+	
+<!--<input type="checkbox" id="check">
+     <label for="check">
+      <i class="xi-star-o" id="btn"></i>
+      <i class="xi-close-square-o" id="cancel"></i>
+    </label> -->
+    <div class="sidebar">
+    <ul>
+     	<li><a href="#" onclick="toggleSidebar('carbonMap')"><i class="xi-map-o"></i>탄소지도</a></li>
+        <li><a href="#" onclick="toggleSidebar('dataOption')"><i class="xi-file-upload-o"></i>데이터</a></li>
+        <li><a href="#" onclick="toggleSidebar('statistic')"><i class="xi-chart-bar"></i>통계</a></li>
+    </ul>
+   </div>
 <!------------------------------------------------------------------------------------------------->
 <!---------------------------- 시도, 시군구, 법정동 셀렉트박스 ------------------------------------>
-<!------------------------------------------------------------------------------------------------->	
-	
-	<!-- ${row.geom } 추가해야지 지도 이동됨.... -->
-	
-	<div class="select-box-container">
-		<div class="select-box">
-			<h2>시도 선택</h2>
-			<select id="sdSelect">
-				<option value="">선택</option>
-				<c:forEach var="row" items="${sdList}">
-					<option value="${row.sd_nm}, ${row.geom }">${row.sd_nm}</option>
-				</c:forEach>
-			</select>
-		</div>
-		<div class="select-box">
-			<h2>시군구 선택</h2>
-			<select id="sggSelect">
-				<option value="">선택</option>
-				<c:forEach var="row" items="${sggList}">
-					<option value="${row.sgg_nm}">${row.sgg_nm}</option>
-				</c:forEach>
-			</select>
-		</div>
-		<div class="select-box">
-			<h2>법정동 선택</h2>
-			<select id="bjdSelect">
-				<option value="">선택</option>
-				<c:forEach var="row" items="${bjdList}">
-					<option value="${row.bjd_nm}, ${row.geom }">${row.bjd_nm}</option>
-				</c:forEach>
-			</select>
-		</div>
-	</div>
-<hr>
+<!------------------------------------------------------------------------------------------------->
+   	<!-- ${row.geom } 추가해야지 지도 이동됨.... -->
+<div id="selectBoxContainer" class="select-box-container">
+  <div class="select-box">
+  <h3>시도 선택</h3>
+    <select id="sdSelect">
+      <option value="">시도 선택</option>
+      <c:forEach var="row" items="${sdList}">
+        <option value="${row.sd_nm}, ${row.geom }">${row.sd_nm}</option>
+      </c:forEach>
+    </select>
+  </div><br>
+  <div class="select-box">
+  <h3>시군구 선택</h3>
+    <select id="sggSelect">
+      <option value="">시군구 선택</option>
+      <c:forEach var="row" items="${sggList}">
+        <option value="${row.sgg_nm}">${row.sgg_nm}</option>
+      </c:forEach>
+    </select>
+  </div><br>
+  <div class="select-box">
+  <h3>범례 선택</h3>
+    <select id="bjdSelect">
+      <option value="">범례 선택</option>
+      <c:forEach var="row" items="${bjdList}">
+        <option value="${row.bjd_nm}">${row.bjd_nm}</option>
+      </c:forEach>
+    </select>
+  </div>
+  <button onclick="search()">검색누르면 데이터 조회 팝업 나오도록</button>
+</div>
+
+<script>
+
+// JavaScript 함수를 사용하여 사이드바 항목을 토글합니다.
+function toggleSidebar(id) {
+    // ID에 해당하는 사이드바 항목을 가져옵니다.
+    var sidebarItem = document.getElementById(id);
+
+    // 현재 사이드바 항목이 열려 있는지 확인합니다.
+    var isVisible = sidebarItem.style.display === 'block';
+
+    // 다른 모든 사이드바 항목을 닫습니다.
+    var sidebarItems = document.querySelectorAll('.sidebar li');
+    sidebarItems.forEach(function(item) {
+        var itemId = item.firstChild.getAttribute('href').substring(1);
+        if (itemId !== id) {
+            document.getElementById(itemId).style.display = 'none';
+        }
+    });
+
+    // 선택한 사이드바 항목의 가시성을 전환합니다.
+    sidebarItem.style.display = isVisible ? 'none' : 'block';
+}
+
+// 검색 함수
+function search() {
+    // Get selected values from the select boxes
+    var sdValue = document.getElementById('sdSelect').value;
+    var sggValue = document.getElementById('sggSelect').value;
+    var bjdValue = document.getElementById('bjdSelect').value;
+    
+    console.log('Selected 시도:', sdValue);
+    console.log('Selected 시군구:', sggValue);
+    console.log('Selected 범례:', bjdValue);
+}
+
+document.getElementById("carbonMap").addEventListener("click", function() {
+  var selectBoxContainer = document.getElementById("selectBoxContainer");
+  if (selectBoxContainer.style.display === "block") {
+    selectBoxContainer.style.display = "none";
+  } else {
+    selectBoxContainer.style.display = "block";
+  }
+});
+
+//데이터 항목 클릭 이벤트 핸들러
+$("#dataOption").on("click", function(event) {
+    event.preventDefault(); // 기본 동작 방지
+
+    // 파일 업로드 폼 보이기
+    $(".dropArea").toggle();
+    $("#fileBtn").toggle(); // 파일 업로드 버튼도 함께 토글
+    $("#progressModal").hide();
+    $("#failModal").hide();
+});
+
+</script>
+
+</div>	
+
 <!------------------------------------------------------------------------------------------------->
 <!--------------------------------------- 파일 업로드 --------------------------------------------->
 <!------------------------------------------------------------------------------------------------->
 
 <!-- 파일 업로드 폼 -->
-<div id="dropArea" style="margin-top: 300px; margin-left: 100px; width: 500px; border: 2px dashed #ccc; padding: 50px; text-align: center; cursor: pointer;">
+<div class="dropArea" id="dropArea">
 <form id="form">
 	<label for="file" class="file-label"></label>
   <input type="file" id="file" name="file" accept=".txt">
 </form>
 </div>
-<button type="button" id="fileBtn" style="margin-top: 10px; margin-left: 100px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">업로드</button>
+<button type="button" id="fileBtn" class="fileBtn">업로드</button>
 
 <!-- 업로드 진행 폼 -->
 <div id="progressModal" class="modal">
@@ -270,8 +396,6 @@ let map = new ol.Map(
 	})
 });
 
-
-
 //<!------------------------------------------------------------------------------------------------->
 //<!---------------- 시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가 ------------------->
 //<!------------------------------------------------------------------------------------------------->
@@ -282,9 +406,6 @@ var sggLayer;
 var bjdLayer;
 
 $('#sdSelect').on("change", function() {
-    var selectSiValue = $(this).val().split(',')[0];
-    // alert(selectSiValue);
-    
     var sdValue = $(this).val(); 
     
     //--------------- 선택된 시/도의 geom값을 가져와서 지도에 표시 ---------------//
@@ -307,7 +428,7 @@ $('#sdSelect').on("change", function() {
 
     var sidoCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
     map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
-    map.getView().setZoom(9); // 중심좌표 기준으로 줌 설정
+    map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
     
     //--------------- 시도 선택 시 시군구 불러오기 옵션 & 레이어 추가 ---------------//
     $.ajax({
@@ -361,14 +482,12 @@ $('#sdSelect').on("change", function() {
     });
 });
 
-
 //<!------------------------------------------------------------------------------------------------->
 //<!-------------- 시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ----------------->
 //<!------------------------------------------------------------------------------------------------->
-$('#sggSelect').on("change", function() {
-    var sggValue = $(this).val();
+  $('#sggSelect').on("change", function() {
+	 var sggValue = $(this).val(); 
 
-    
     //--------------- 시군구 선택 시 법정동 불러오기 옵션 & 레이어 추가 ---------------//
     $.ajax({
         type: 'post',
@@ -380,9 +499,8 @@ $('#sggSelect').on("change", function() {
             bjdSelect.empty();
             bjdSelect.append('<option value="">선택</option>');
             $.each(response, function(index, item) {
-                bjdSelect.append('<option value="' + item.value + '">' + item.name + '</option>'); // 응답으로 받은 데이터로 옵션 추가
+                bjdSelect.append('<option value="' + item.bjd_nm + '">' + item.bjd_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
             });
-            
             
             // 기존에 추가된 시군구 레이어가 있다면 삭제
             var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
@@ -411,39 +529,38 @@ $('#sggSelect').on("change", function() {
          // 새로운 시군구 레이어 변수에 할당
             newSggLayer.set('name', 'sggLayer'); // 레이어에 이름 설정
             map.addLayer(newSggLayer);
+          
         }
     });
 });
-
-
 //<!------------------------------------------------------------------------------------------------->
 //<!---------------------- 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ------------------------>
 //<!------------------------------------------------------------------------------------------------->
-$('#bjdSelect').change(function() {
-    var bjdSelectedValue = $(this).val().split(',')[0];
-    var bjdSelectedText = $(this).find('option:selected').text();
-    updateAddress(null, null, bjdSelectedText); //상단 법정동 노출
+  
+  $('#bjdSelect').change(function() {
+	    var bjdValue = $(this).val(); 
+	    var sggValue = $('#sggSelect').val(); // 시군구 선택 값을 가져옴
 
-  //--------------- 법정동 불러오기 옵션 & 레이어 추가 ---------------//
-            var newBjdLayer = new ol.layer.Tile({
-                source: new ol.source.TileWMS({
-                    url : 'http://localhost:8080/geoserver/korea/wms?service=WMS', // 1. 레이어 URL
-                    params : {
-                        'VERSION' : '1.1.0', // 2. 버전
-                        'LAYERS' : 'korea:tl_bjd', // 3. 작업공간:레이어 명
-                        'CQL_FILTER': "bjd_nm LIKE '%" + bjdValue + "%'",
-                        'SRS': 'EPSG:3857',
-                        'FORMAT': 'image/png'
-                    },
-                    serverType : 'geoserver',
-                })
-        });
-         // 새로운 Bjd 레이어 변수에 할당
-            newBjdLayer.set('name', 'bjdLayer'); // 레이어에 이름 설정
-            map.addLayer(newBjdLayer);
-	});
+	    //--------------- 법정동 불러오기 옵션 & 레이어 추가 ---------------//
+	    var newBjdLayer = new ol.layer.Tile({
+	        source: new ol.source.TileWMS({
+	            url : 'http://localhost:8080/geoserver/korea/wms?service=WMS',
+	            params : {
+	                'VERSION' : '1.1.0',
+	                'LAYERS' : 'korea:tl_bjd',
+	                'CQL_FILTER': "bjd_nm LIKE '%" + bjdValue + "%'",
+	                'SRS': 'EPSG:3857',
+	                'FORMAT': 'image/png'
+	            },
+	            serverType : 'geoserver',
+	        })
+	    });
+     // 새로운 Bjd 레이어 변수에 할당
+        newBjdLayer.set('name', 'bjdLayer'); // 레이어에 이름 설정
+        map.addLayer(newBjdLayer);
+	})
 });
-</script><%-- 
+</script>
 <!------------------------------------------------------------->
 <!------------------------ 차트 그리기 ------------------------>
 <!------------------------------------------------------------->
@@ -500,8 +617,6 @@ $('#bjdSelect').change(function() {
         }
     });
 </script>
- --%>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
