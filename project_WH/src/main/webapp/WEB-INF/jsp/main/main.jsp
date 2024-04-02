@@ -158,20 +158,53 @@
 	<div class="map-container">
 		<div id="map" class="map"></div>
 	</div>
-	
-	
-<!--<input type="checkbox" id="check">
-     <label for="check">
-      <i class="xi-star-o" id="btn"></i>
-      <i class="xi-close-square-o" id="cancel"></i>
-    </label> -->
-    <div class="sidebar">
-    <ul>
-     	<li><a href="#" onclick="toggleSidebar('carbonMap')"><i class="xi-map-o"></i>탄소지도</a></li>
-        <li><a href="#" onclick="toggleSidebar('dataOption')"><i class="xi-file-upload-o"></i>데이터</a></li>
-        <li><a href="#" onclick="toggleSidebar('statistic')"><i class="xi-chart-bar"></i>통계</a></li>
-    </ul>
-   </div>
+<!-------------------------------------------------------->
+<!----------------------- 사이드바 ----------------------->
+<!-------------------------------------------------------->
+
+<div class="sidebar">
+  <ul>
+    <li><a href="#" id="carbonMap" onclick="toggleMenu('carbonMapSubMenu')">탄소지도</a></li>
+    <li><a href="#" id="dataOption" onclick="toggleMenu('dataOptionSubMenu')">데이터</a></li>
+    <li><a href="#" id="statistic" onclick="toggleMenu('statisticSubMenu')">통계</a></li>
+  </ul>
+</div>
+
+<div id="carbonMapSubMenu" class="submenu">탄소지도 서브메뉴</div>
+<div id="dataOptionSubMenu" class="submenu">데이터 서브메뉴</div>
+<div id="statisticSubMenu" class="submenu">통계 서브메뉴</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+ document.getElementById("carbonMap").addEventListener("click", function() {
+  var selectBoxContainer = document.getElementById("selectBoxContainer");
+  if (selectBoxContainer.style.display === "block") {
+    selectBoxContainer.style.display = "none";
+  } else {
+    selectBoxContainer.style.display = "block";
+  }
+});
+//데이터 항목 클릭 이벤트 핸들러
+$("#dataOption").on("click", function(event) {
+    event.preventDefault(); // 기본 동작 방지
+
+    // 파일 업로드 폼 보이기
+    $(".dropArea").toggle();
+    $("#fileBtn").toggle(); // 파일 업로드 버튼도 함께 토글
+    $("#progressModal").hide();
+    $("#failModal").hide();
+}); 
+</script>
+
+<!-- 메뉴 3개가 겹치지 않고 하나씩 나타나게 하기 -->
+<script>
+
+
+</script>
+
+
+
 <!------------------------------------------------------------------------------------------------->
 <!---------------------------- 시도, 시군구, 법정동 셀렉트박스 ------------------------------------>
 <!------------------------------------------------------------------------------------------------->
@@ -206,64 +239,6 @@
   </div>
   <button onclick="search()">검색누르면 데이터 조회 팝업 나오도록</button>
 </div>
-
-<script>
-
-// JavaScript 함수를 사용하여 사이드바 항목을 토글합니다.
-function toggleSidebar(id) {
-    // ID에 해당하는 사이드바 항목을 가져옵니다.
-    var sidebarItem = document.getElementById(id);
-
-    // 현재 사이드바 항목이 열려 있는지 확인합니다.
-    var isVisible = sidebarItem.style.display === 'block';
-
-    // 다른 모든 사이드바 항목을 닫습니다.
-    var sidebarItems = document.querySelectorAll('.sidebar li');
-    sidebarItems.forEach(function(item) {
-        var itemId = item.firstChild.getAttribute('href').substring(1);
-        if (itemId !== id) {
-            document.getElementById(itemId).style.display = 'none';
-        }
-    });
-
-    // 선택한 사이드바 항목의 가시성을 전환합니다.
-    sidebarItem.style.display = isVisible ? 'none' : 'block';
-}
-
-// 검색 함수
-function search() {
-    // Get selected values from the select boxes
-    var sdValue = document.getElementById('sdSelect').value;
-    var sggValue = document.getElementById('sggSelect').value;
-    var bjdValue = document.getElementById('bjdSelect').value;
-    
-    console.log('Selected 시도:', sdValue);
-    console.log('Selected 시군구:', sggValue);
-    console.log('Selected 범례:', bjdValue);
-}
-
-document.getElementById("carbonMap").addEventListener("click", function() {
-  var selectBoxContainer = document.getElementById("selectBoxContainer");
-  if (selectBoxContainer.style.display === "block") {
-    selectBoxContainer.style.display = "none";
-  } else {
-    selectBoxContainer.style.display = "block";
-  }
-});
-
-//데이터 항목 클릭 이벤트 핸들러
-$("#dataOption").on("click", function(event) {
-    event.preventDefault(); // 기본 동작 방지
-
-    // 파일 업로드 폼 보이기
-    $(".dropArea").toggle();
-    $("#fileBtn").toggle(); // 파일 업로드 버튼도 함께 토글
-    $("#progressModal").hide();
-    $("#failModal").hide();
-});
-
-</script>
-
 </div>	
 
 <!------------------------------------------------------------------------------------------------->
@@ -564,12 +539,27 @@ $('#sdSelect').on("change", function() {
 <!------------------------------------------------------------->
 <!------------------------ 차트 그리기 ------------------------>
 <!------------------------------------------------------------->
-<div id="chartContainer" style="width: 1500px; height: 1500px; margin-top:100px; margin-left:50px;">
-	<canvas id="myChart"></canvas>
+<style>
+    #chartContainer {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        top: 100px; /* 맵 상단에서의 거리 */
+        left: 50px; /* 맵 좌측에서의 거리 */
+    }
+</style>
+
+<div id="chartContainer" style="width: 500px; height: 300px; margin-left:250px; margin-top:500px; background-color: white;">
+    <canvas id="myChart"></canvas>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+//메뉴 토글 기능 추가
+$('#statistic').on('click', function() {
     // JSP 코드를 사용하여 chartData를 가져옵니다.
+    $('#chartContainer').toggle();
+    
     var chartData = [
         <c:forEach items="${chartData}" var="data">
             {
@@ -582,8 +572,8 @@ $('#sdSelect').on("change", function() {
     var labels = chartData.map(function(item) { return item['sgg_cd']; }); // 'sgg_cd' 키로 변경
     var data = chartData.map(function(item) { return item['total_used_kwh']; }); // 'total_used_kwh' 키로 변경
 
-	console.log(labels);
-	console.log(data);
+    console.log(labels);
+    console.log(data);
     
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
@@ -616,7 +606,9 @@ $('#sdSelect').on("change", function() {
             }
         }
     });
+});
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

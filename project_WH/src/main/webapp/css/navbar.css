@@ -50,7 +50,16 @@ ul li:hover a{
 .sidebar ul a i{
   margin-right: 16px;
 }
-
+/* 새로운 스타일 추가 */
+.sidebar ul li {
+    transition: padding-left .4s;
+}
+.sidebar ul li.hide-menu {
+    padding-left: 40px;
+}
+.sidebar ul li.show-menu {
+    padding-left: 250px;
+}
 /* 
 #check{
   display: none;
