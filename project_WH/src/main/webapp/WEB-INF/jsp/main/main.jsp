@@ -26,9 +26,7 @@
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500'">
-
 <link rel="stylesheet" type="text/css" href="/css/navbar.css">
-
 
 <style type="text/css">
 .map {
@@ -48,7 +46,8 @@
 	top: 100px;
 	left: 250px;
 	margin-right:0px;
-	width: 300px;
+	width: 150px;
+	height: 300px;
 	background-color: white;
 	padding: 10px;
 	display: none;
@@ -113,27 +112,36 @@
   background-color: #f0f0f0; /* 헤더의 배경색을 설정합니다. */
   z-index: 1000; /* 다른 요소보다 위에 표시되도록 설정합니다. */
   }
- .content {
- margin-top: 100px; /* 헤더의 아래에 배치하기 위해 헤더의 높이만큼 여백을 줍니다. */
- padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
-  }
+.content {
+margin-top: 100px; /* 헤더의 아래에 배치하기 위해 헤더의 높이만큼 여백을 줍니다. */
+padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
+ }
   
 .dropArea {
     display: none;
-    margin-top: 100px;
-    margin-left: 300px;
-    width: 300px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 200px;
+    margin-left: 200px;
+    width: 400px;
+    height : 200px;
     border: 2px dashed #ccc;
-    padding: 50px;
+    padding: 30px;
     text-align: center;
     cursor: pointer;
 }
-
+#file {
+  position: absolute;
+    margin-top: 60px;
+    margin-left: 50px;
+  transform: translate(-50%, -50%);
+}
 .fileBtn {
 	display: none;
     margin-top: 10px;
     margin-left: 300px;
-    width: 100px;
+    /* width: 100px; */
     padding: 10px 20px; 
     background-color: #4CAF50; 
     color: white; 
@@ -141,7 +149,13 @@
     border-radius: 5px; 
     cursor: pointer;
 }
-
+#chartContainer {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 100px; /* 맵 상단에서의 거리 */
+    left: 10px; /* 맵 좌측에서의 거리 */
+}
 </style>
 
 </head>
@@ -161,21 +175,16 @@
 <!-------------------------------------------------------->
 <!----------------------- 사이드바 ----------------------->
 <!-------------------------------------------------------->
-
 <div class="sidebar">
   <ul>
-    <li><a href="#" id="carbonMap" onclick="toggleMenu('carbonMapSubMenu')">탄소지도</a></li>
-    <li><a href="#" id="dataOption" onclick="toggleMenu('dataOptionSubMenu')">데이터</a></li>
-    <li><a href="#" id="statistic" onclick="toggleMenu('statisticSubMenu')">통계</a></li>
+    <li><a href="#" id="carbonMap" >탄소지도</a></li>
+    <li><a href="#" id="dataOption" >데이터</a></li>
+    <li><a href="#" id="statistic" >통계</a></li>
   </ul>
 </div>
-
-<div id="carbonMapSubMenu" class="submenu">탄소지도 서브메뉴</div>
-<div id="dataOptionSubMenu" class="submenu">데이터 서브메뉴</div>
-<div id="statisticSubMenu" class="submenu">통계 서브메뉴</div>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<!-- 탄소지도 내용 -->
 <script>
  document.getElementById("carbonMap").addEventListener("click", function() {
   var selectBoxContainer = document.getElementById("selectBoxContainer");
@@ -185,6 +194,7 @@
     selectBoxContainer.style.display = "block";
   }
 });
+ 
 //데이터 항목 클릭 이벤트 핸들러
 $("#dataOption").on("click", function(event) {
     event.preventDefault(); // 기본 동작 방지
@@ -195,7 +205,10 @@ $("#dataOption").on("click", function(event) {
     $("#progressModal").hide();
     $("#failModal").hide();
 }); 
-</script>
+ </script>
+
+</div>
+
 
 <!-- 메뉴 3개가 겹치지 않고 하나씩 나타나게 하기 -->
 <script>
@@ -203,43 +216,6 @@ $("#dataOption").on("click", function(event) {
 
 </script>
 
-
-
-<!------------------------------------------------------------------------------------------------->
-<!---------------------------- 시도, 시군구, 법정동 셀렉트박스 ------------------------------------>
-<!------------------------------------------------------------------------------------------------->
-   	<!-- ${row.geom } 추가해야지 지도 이동됨.... -->
-<div id="selectBoxContainer" class="select-box-container">
-  <div class="select-box">
-  <h3>시도 선택</h3>
-    <select id="sdSelect">
-      <option value="">시도 선택</option>
-      <c:forEach var="row" items="${sdList}">
-        <option value="${row.sd_nm}, ${row.geom }">${row.sd_nm}</option>
-      </c:forEach>
-    </select>
-  </div><br>
-  <div class="select-box">
-  <h3>시군구 선택</h3>
-    <select id="sggSelect">
-      <option value="">시군구 선택</option>
-      <c:forEach var="row" items="${sggList}">
-        <option value="${row.sgg_nm}">${row.sgg_nm}</option>
-      </c:forEach>
-    </select>
-  </div><br>
-  <div class="select-box">
-  <h3>범례 선택</h3>
-    <select id="bjdSelect">
-      <option value="">범례 선택</option>
-      <c:forEach var="row" items="${bjdList}">
-        <option value="${row.bjd_nm}">${row.bjd_nm}</option>
-      </c:forEach>
-    </select>
-  </div>
-  <button onclick="search()">검색누르면 데이터 조회 팝업 나오도록</button>
-</div>
-</div>	
 
 <!------------------------------------------------------------------------------------------------->
 <!--------------------------------------- 파일 업로드 --------------------------------------------->
@@ -350,10 +326,51 @@ $("#fileBtn").on("click", function() {
 </script>
 
 <!------------------------------------------------------------------------------------------------->
+<!---------------------------- 시도, 시군구, 법정동 셀렉트박스 ------------------------------------>
+<!------------------------------------------------------------------------------------------------->
+   	<!-- ${row.geom } 추가해야지 지도 이동됨.... -->
+<div id="selectBoxContainer" class="select-box-container">
+  <div class="select-box">
+  <h3>시도 선택</h3>
+    <select id="sdSelect">
+      <option value="">시도 선택</option>
+      <c:forEach var="row" items="${sdList}">
+        <option value="${row.sd_cd}, ${row.geom }">${row.sd_nm}</option>
+      </c:forEach>
+    </select>
+  </div>
+  <br>
+  <div class="select-box">
+  <h3>시군구 선택</h3>
+    <select id="sggSelect">
+      <option value="">시군구 선택</option>
+    </select>
+  </div>
+  <br>
+  <div class="select-box">
+  <h3>범례 선택</h3>
+     <select id="legendSelect">
+         <option value="default">범례 선택</option>
+         <option value="1">등간격</option>
+         <option value="2">내추럴 브레이크</option>
+     </select>
+  </div>
+  <br>
+  <button id="insertbtn" class="insertbtn">입력하기</button>
+</div>
+                
+<%-- <select id="bjdSelect">
+      <option value="">범례 선택</option>
+      <c:forEach var="row" items="${bjdList}">
+        <option value="${row.bjd_nm}">${row.bjd_nm}</option>
+      </c:forEach>
+</select> --%>
+<!------------------------------------------------------------------------------------------------->
 <!------------------------------------- OpenLayers MAP -------------------------------------------->
 <!------------------------------------------------------------------------------------------------->
 <script type="text/javascript">
 $(document).ready(function() {
+	
 let map = new ol.Map(
 		{ // OpenLayer의 맵 객체를 생성한다.
 			target : 'map', // 맵 객체를 연결하기 위한 target으로 <div>의 id값을 지정해준다.
@@ -375,21 +392,29 @@ let map = new ol.Map(
 //<!---------------- 시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가 ------------------->
 //<!------------------------------------------------------------------------------------------------->
 
-//레이어 변수 선언
-var sdLayer; 
-var sggLayer; 
-var bjdLayer;
+//새로운 시도 레이어 생성
+var newSdLayer = new ol.layer.Tile({
+    source: new ol.source.TileWMS({
+    	target: 'newSdLayer',
+        url: 'http://localhost/geoserver/korea/wms?service=WMS',
+        params: {
+            'VERSION': '1.1.0',
+            'LAYERS': 'korea:tl_sd',
+            'SRS': 'EPSG:3857',
+            'FORMAT': 'image/png'
+        },
+        serverType: 'geoserver',
+    })
+});
 
 $('#sdSelect').on("change", function() {
-    var sdValue = $(this).val(); 
+    var sdValue = $(this).val().split(',')[0]; //sd_cd
     
     //--------------- 선택된 시/도의 geom값을 가져와서 지도에 표시 ---------------//
-    var datas = $(this).val(); // value 값 가져오기
-    var values = datas.split(",");
-    var sdValue = values[0]; // sido 코드
+    var geom = $(this).val().split(',')[1]; // x 좌표
        
-    var geom = values[1]; // x 좌표
-    // alert("sido 좌표값" + sdValue  + geom);
+    alert("도시코드:"+sdValue+", 좌표:"+geom);
+    
     var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
     var matches = regex.exec(geom);
     var xCoordinate, yCoordinate;
@@ -405,37 +430,36 @@ $('#sdSelect').on("change", function() {
     map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
     map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
     
+	// PARAM 추가해줘야 AJAX 로 PARAM 보내줄 수 있음
+    newSdLayer.getSource().updateParams({'CQL_FILTER' : "sd_cd = " + sdValue});
+       
+    map.addLayer(newSdLayer); // 맵 객체에 레이어를 추가함
+
+    
     //--------------- 시도 선택 시 시군구 불러오기 옵션 & 레이어 추가 ---------------//
+    let sggOpt = `<option value="0">선택</option>`; // 시군구 Option html String
+    let sggDd = document.querySelector("#sggSelect"); // 시군구 드롭다운
+    
     $.ajax({
         type: 'post',
         url: '/getSggList.do', 
         data: { 'sdValue': sdValue }, 
         dataType: "json",
         success: function(data) {
-            var sggSelect = $('#sggSelect');
-            sggSelect.empty();
-            sggSelect.append('<option value="">선택</option>');
-            $.each(data, function(index, item) {
-                sggSelect.append('<option value="' + item.sgg_nm + '">' + item.sgg_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
-            });
+        	console.log(data); // 배열로 출력됨. 이거 가져다 쓰면 됨!! (오류 해결)
+        	sggDd.innerHTML = "";
+        	for(let i = 0; i < data.length;i++) {
+                 sggOpt += "<option value='"+ data[i].sgg_cd+"'>"+ data[i].sgg_nm+"</option>";
+            }
+        	sggDd.innerHTML = sggOpt;
+        	},
+        	error : function(error){
+                alert("문제발생"+error);
+            }
+    }); 
+});
 
-            // 새로운 시도 레이어 생성
-            var newSdLayer = new ol.layer.Tile({
-                source: new ol.source.TileWMS({
-                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                    params: {
-                        'VERSION': '1.1.0',
-                        'LAYERS': 'korea:tl_sd',
-                        'CQL_FILTER': "sd_nm LIKE '%" + sdValue + "%'",
-                        'SRS': 'EPSG:3857',
-                        'FORMAT': 'image/png'
-                    },
-                    serverType: 'geoserver'
-                }),
-                opacity: 0.5
-            });
-
-             // 기존에 추가된 시도 레이어가 있다면 삭제
+  /*            // 기존에 추가된 시도 레이어가 있다면 삭제
             if (sdLayer) {
                 map.removeLayer(sdLayer);         
             } 
@@ -455,16 +479,79 @@ $('#sdSelect').on("change", function() {
             }
         }
     });
-});
+}); */
 
 //<!------------------------------------------------------------------------------------------------->
-//<!-------------- 시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ----------------->
+//<!-------------- 범례, 범례 시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ----------------->
 //<!------------------------------------------------------------------------------------------------->
   $('#sggSelect').on("change", function() {
-	 var sggValue = $(this).val(); 
+	 var sggValue = $("#sggSelect option:checked").val();
+	 console.log(sggValue);
 
+     // 새로운 시군구 레이어 생성
+     var newSggLayer = new ol.layer.Tile({
+         source: new ol.source.TileWMS({
+         	target: 'newSggLayer',
+             url: 'http://localhost/geoserver/korea/wms?service=WMS',
+             params: {
+                 'VERSION': '1.1.0',
+                 'LAYERS': 'korea:tl_sgg',
+                 'CQL_FILTER': "sgg_cd = " + sggValue,
+                 'SRS': 'EPSG:3857',
+                 'FORMAT': 'image/png'
+             },
+             serverType: 'geoserver',
+         })
+     });
+     
+     map.addLayer(newSggLayer); // 맵 객체에 레이어를 추가함
+  });
+     
+   //<!----------------------------------------------------------->
+   //<!---------------------- 범례 ------------------------>
+   //<!----------------------------------------------------------->
+     $("#insertbtn").click(function() {
+   	    var legend = $("#legendSelect").val();
+   	    var sggValue = $("#sggSelect option:checked").val(); /* 아래에서 cql 필터로 걸러줄거 선언 */
+
+       /*    map.removeLayer(sdLayer);
+           map.removeLayer(newSggLayer);*/
+           
+   	    var style = (legend === "1") ? 'bjd_equal' : 'bjd_natural';
+   	    alert((legend === "1") ? "등간격 스타일을 적용합니다." : "네추럴 브레이크 스타일을 적용합니다.");
+   	    
+   	    $.ajax({
+   	        url: "/legend.do",
+   	        type: 'POST',
+   	        dataType: "json",
+   	        data: { "legend": legend },
+   	        success: function(result) {
+   	        	console.log(sggValue+"안녕");
+   	            var newBjdLayer = new ol.layer.Tile({
+   	                source: new ol.source.TileWMS({
+   	                	target: 'bjd_CQL',
+   	                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
+   	                    params: {
+   	                        'VERSION': '1.1.0',
+   	                        'LAYERS': 'korea:b3_bjd_view',
+   	                        'CQL_FILTER': "sgg_cd = " + sggValue,
+   	                        'SRS': 'EPSG:3857',
+   	                        'FORMAT': 'image/png',
+   	                        'STYLES': style,
+   	                    },
+   	                    serverType : 'geoserver',
+   	                })
+   	            });
+   	            map.addLayer(newBjdLayer);
+   	        },
+   	        error: function(){
+   				alert("범례실패");
+   	        }
+   	    });
+   	});
+	 
     //--------------- 시군구 선택 시 법정동 불러오기 옵션 & 레이어 추가 ---------------//
-    $.ajax({
+   /* $.ajax({
         type: 'post',
         url: '/getBjdList.do',
         data: { 'sggValue': sggValue },
@@ -485,75 +572,28 @@ $('#sdSelect').on("change", function() {
                 map.removeLayer(sggLayerToRemove);
             }
 
-            // 새로운 시군구 레이어 생성
-            var newSggLayer = new ol.layer.Tile({
-                source: new ol.source.TileWMS({
-                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
-                    params: {
-                        'VERSION': '1.1.0',
-                        'LAYERS': 'korea:tl_sgg',
-                        'CQL_FILTER': "sgg_nm LIKE '%" + sggValue + "%'",
-                        'SRS': 'EPSG:3857',
-                        'FORMAT': 'image/png'
-                    },
-                    serverType: 'geoserver'
-                }),
-                opacity: 0.5
-            });
+
 
          // 새로운 시군구 레이어 변수에 할당
             newSggLayer.set('name', 'sggLayer'); // 레이어에 이름 설정
             map.addLayer(newSggLayer);
           
         }
-    });
-});
-//<!------------------------------------------------------------------------------------------------->
-//<!---------------------- 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ------------------------>
-//<!------------------------------------------------------------------------------------------------->
+    });*/
+
   
-  $('#bjdSelect').change(function() {
-	    var bjdValue = $(this).val(); 
-	    var sggValue = $('#sggSelect').val(); // 시군구 선택 값을 가져옴
 
-	    //--------------- 법정동 불러오기 옵션 & 레이어 추가 ---------------//
-	    var newBjdLayer = new ol.layer.Tile({
-	        source: new ol.source.TileWMS({
-	            url : 'http://localhost:8080/geoserver/korea/wms?service=WMS',
-	            params : {
-	                'VERSION' : '1.1.0',
-	                'LAYERS' : 'korea:tl_bjd',
-	                'CQL_FILTER': "bjd_nm LIKE '%" + bjdValue + "%'",
-	                'SRS': 'EPSG:3857',
-	                'FORMAT': 'image/png'
-	            },
-	            serverType : 'geoserver',
-	        })
-	    });
-     // 새로운 Bjd 레이어 변수에 할당
-        newBjdLayer.set('name', 'bjdLayer'); // 레이어에 이름 설정
-        map.addLayer(newBjdLayer);
-	})
-});
+ });
+  
 </script>
-<!------------------------------------------------------------->
-<!------------------------ 차트 그리기 ------------------------>
-<!------------------------------------------------------------->
-<style>
-    #chartContainer {
-        position: absolute;
-        width: 500px;
-        height: 500px;
-        top: 100px; /* 맵 상단에서의 거리 */
-        left: 50px; /* 맵 좌측에서의 거리 */
-    }
-</style>
-
-<div id="chartContainer" style="width: 500px; height: 300px; margin-left:250px; margin-top:500px; background-color: white;">
+<!----------------------------------------------------------->
+<!----------------------- 차트 그리기 ----------------------->
+<!----------------------------------------------------------->
+<div id="chartContainer" style="width: 500px; height: 300px; margin-left:250px; margin-top:500px; background-color: white; display: none;">
     <canvas id="myChart"></canvas>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 //메뉴 토글 기능 추가
 $('#statistic').on('click', function() {

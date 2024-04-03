@@ -8,7 +8,7 @@
 		FROM tl_sd;
 	</select>
 
-	<select id="sgglist" resultType="HashMap">
+ 	<select id="sgglist" resultType="HashMap">
 	  SELECT REPLACE(g.sgg_nm, CONCAT(s.sd_nm, ' '), '') AS sgg_nm, 
       g.sgg_cd, 
       ST_AsText(ST_Transform(ST_Centroid(g.geom), 4326)) AS geom 
@@ -17,23 +17,23 @@
       WHERE s.sd_cd = #{sdValue};
 	</select>
 
- 	<select id="bjdlist" resultType="HashMap">
+  	<select id="bjdlist" resultType="HashMap">
 		SELECT DISTINCT b.bjd_nm, b.bjd_cd 
 		FROM tl_bjd b
 		JOIN tl_sgg c ON b.sgg_cd = c.sgg_cd
 		WHERE c.sgg_cd = #{sggValue};
-	</select>
+	</select> 
 
 	<select id="getSgg" parameterType="String" resultType="HashMap">
-		SELECT sgg_nm, sgg_cd FROM tl_sgg WHERE sd_nm = #{sdValue};
+		SELECT sgg_nm, sgg_cd FROM tl_sgg WHERE sd_nm =(SELECT sd_nm FROM tl_sd WHERE sd_cd=#{sdValue})
 	</select>
 
-	<select id="getBjd" parameterType="String" resultType="HashMap">
+ 	<select id="getBjd" parameterType="String" resultType="HashMap">
 		SELECT DISTINCT b.bjd_nm, b.bjd_cd  
 		FROM tl_bjd b
 		JOIN tl_sgg c ON b.sgg_cd = c.sgg_cd
 		WHERE c.sgg_cd = #{sggValue};
-	</select>
+	</select> 
 
 	<insert id="uploadFile" parameterType="Map">
 		INSERT INTO "TB_CARBON_B3"

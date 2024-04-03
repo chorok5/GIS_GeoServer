@@ -35,6 +35,9 @@ public class RestFullController {
     
     @PostMapping("/getSggList.do")
     public List<Map<String, Object>> getSggList(@RequestParam("sdValue") String sdValue) {
+    	System.out.println(sdValue);
+    	System.out.println("안녕안녕");
+
       List<Map<String, Object>> list = servletService.getSggList(sdValue);
       System.out.println(list);
       return list;
@@ -100,6 +103,11 @@ public class RestFullController {
 		return "success";
 	}
 	
+	@PostMapping("/legend.do")
+	public Map<String, Object> legend(@RequestParam("legend") String legend) {
+		Map<String, Object> response = new HashMap<>();
+		return response;
+	}
 
 
 }
