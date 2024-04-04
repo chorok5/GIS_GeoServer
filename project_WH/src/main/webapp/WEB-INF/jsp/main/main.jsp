@@ -29,6 +29,7 @@
 <link rel="stylesheet" type="text/css" href="/css/navbar.css">
 
 <style type="text/css">
+
 .map {
 	height: 800px;
 	width: 60%;
@@ -156,6 +157,7 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
     top: 100px; /* 맵 상단에서의 거리 */
     left: 10px; /* 맵 좌측에서의 거리 */
 }
+
 </style>
 
 </head>
@@ -358,13 +360,7 @@ $("#fileBtn").on("click", function() {
   <br>
   <button id="insertbtn" class="insertbtn">입력하기</button>
 </div>
-                
-<%-- <select id="bjdSelect">
-      <option value="">범례 선택</option>
-      <c:forEach var="row" items="${bjdList}">
-        <option value="${row.bjd_nm}">${row.bjd_nm}</option>
-      </c:forEach>
-</select> --%>
+
 <!------------------------------------------------------------------------------------------------->
 <!------------------------------------- OpenLayers MAP -------------------------------------------->
 <!------------------------------------------------------------------------------------------------->
@@ -391,9 +387,33 @@ let map = new ol.Map(
 //<!------------------------------------------------------------------------------------------------->
 //<!---------------- 시도 선택 시 시군구 옵션 업데이트 및 새로운 시도 레이어 추가 ------------------->
 //<!------------------------------------------------------------------------------------------------->
+$('#carbonMap').on("click", function() {
 
+      // 시도 메뉴를 클릭했을 때 시군구 레이어가 있을 경우 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'sggLayer') {
+            map.removeLayer(layer);
+        }
+    });
+
+    // 시도 메뉴를 클릭했을 때 법정동 범례 레이어가 있을 경우 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'newBjdLayer') {
+            map.removeLayer(layer);
+        }
+    }); 
+    // 이전에 추가된 범례 레이어를 찾아서 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'bjdLayer') {
+            map.removeLayer(layer);
+        }
+    });
+});
+    
+    
 //새로운 시도 레이어 생성
 var newSdLayer = new ol.layer.Tile({
+	name: 'sdLayer',
     source: new ol.source.TileWMS({
     	target: 'newSdLayer',
         url: 'http://localhost/geoserver/korea/wms?service=WMS',
@@ -410,10 +430,31 @@ var newSdLayer = new ol.layer.Tile({
 $('#sdSelect').on("change", function() {
     var sdValue = $(this).val().split(',')[0]; //sd_cd
     
+    // 기존에 추가된 시도 레이어가 있을 경우 제거
+/*     map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'sdLayer') {
+            map.removeLayer(layer);
+        }
+    }); */
+    
+    // 기존에 추가된 시군구 레이어가 있을 경우 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'sggLayer') {
+            map.removeLayer(layer);
+        }
+    });
+    
+    // 이전에 추가된 범례 레이어를 찾아서 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'bjdLayer') {
+            map.removeLayer(layer);
+        }
+    });
+    
     //--------------- 선택된 시/도의 geom값을 가져와서 지도에 표시 ---------------//
     var geom = $(this).val().split(',')[1]; // x 좌표
        
-    alert("도시코드:"+sdValue+", 좌표:"+geom);
+    // alert("도시코드:"+sdValue+", 좌표:"+geom);
     
     var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
     var matches = regex.exec(geom);
@@ -433,8 +474,7 @@ $('#sdSelect').on("change", function() {
 	// PARAM 추가해줘야 AJAX 로 PARAM 보내줄 수 있음
     newSdLayer.getSource().updateParams({'CQL_FILTER' : "sd_cd = " + sdValue});
        
-    map.addLayer(newSdLayer); // 맵 객체에 레이어를 추가함
-
+    //map.addLayer(newSdLayer); // 맵 객체에 레이어를 추가함
     
     //--------------- 시도 선택 시 시군구 불러오기 옵션 & 레이어 추가 ---------------//
     let sggOpt = `<option value="0">선택</option>`; // 시군구 Option html String
@@ -450,36 +490,15 @@ $('#sdSelect').on("change", function() {
         	sggDd.innerHTML = "";
         	for(let i = 0; i < data.length;i++) {
                  sggOpt += "<option value='"+ data[i].sgg_cd+"'>"+ data[i].sgg_nm+"</option>";
-            }
-        	sggDd.innerHTML = sggOpt;
+          	  }
+        		sggDd.innerHTML = sggOpt;
         	},
         	error : function(error){
                 alert("문제발생"+error);
             }
     }); 
+    map.addLayer(newSdLayer);
 });
-
-  /*            // 기존에 추가된 시도 레이어가 있다면 삭제
-            if (sdLayer) {
-                map.removeLayer(sdLayer);         
-            } 
-
-            // 새로운 시도 레이어 변수에 할당
-            sdLayer = newSdLayer;
-
-            // 새로운 시도 레이어 추가
-            map.addLayer(sdLayer);
-            
-            // 기존에 추가된 시군구 레이어가 있다면 삭제
-            var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
-                return layer.get('name') === 'sggLayer';
-            });
-            if (sggLayerToRemove) {
-                map.removeLayer(sggLayerToRemove);
-            }
-        }
-    });
-}); */
 
 //<!------------------------------------------------------------------------------------------------->
 //<!-------------- 범례, 범례 시군구 선택 시 법정동 옵션 업데이트 및 새로운 시군구 레이어 추가 ----------------->
@@ -487,35 +506,73 @@ $('#sdSelect').on("change", function() {
   $('#sggSelect').on("change", function() {
 	 var sggValue = $("#sggSelect option:checked").val();
 	 console.log(sggValue);
-
-     // 새로운 시군구 레이어 생성
-     var newSggLayer = new ol.layer.Tile({
-         source: new ol.source.TileWMS({
-         	target: 'newSggLayer',
-             url: 'http://localhost/geoserver/korea/wms?service=WMS',
-             params: {
-                 'VERSION': '1.1.0',
-                 'LAYERS': 'korea:tl_sgg',
-                 'CQL_FILTER': "sgg_cd = " + sggValue,
-                 'SRS': 'EPSG:3857',
-                 'FORMAT': 'image/png'
-             },
-             serverType: 'geoserver',
-         })
-     });
-     
-     map.addLayer(newSggLayer); // 맵 객체에 레이어를 추가함
-  });
+	 
+	    // 기존에 추가된 시군구 레이어가 있을 경우 제거
+	    map.getLayers().forEach(function (layer) {
+	        if (layer.get('name') === 'sggLayer') {
+	            map.removeLayer(layer);
+	        }
+	    });
+	    
+	    // 이전에 추가된 범례 레이어를 찾아서 제거
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') === 'bjdLayer') {
+            map.removeLayer(layer);
+        }
+    });
+	    
+	    // 새로운 시군구 레이어 생성
+	    var newSggLayer = new ol.layer.Tile({
+	        name: 'sggLayer', // 레이어의 이름을 설정하여 추후에 식별할 수 있도록 함
+	        source: new ol.source.TileWMS({
+	            url: 'http://localhost/geoserver/korea/wms?service=WMS',
+	            params: {
+	                'VERSION': '1.1.0',
+	                'LAYERS': 'korea:tl_sgg',
+	                'CQL_FILTER': "sgg_cd = " + sggValue,
+	                'SRS': 'EPSG:3857',
+	                'FORMAT': 'image/png'
+	            },
+	            serverType: 'geoserver',
+	        })
+	    });
+	    map.addLayer(newSggLayer); // 맵 객체에 새로운 시군구 레이어를 추가함
+	});
      
    //<!----------------------------------------------------------->
    //<!---------------------- 범례 ------------------------>
    //<!----------------------------------------------------------->
      $("#insertbtn").click(function() {
+    	    // 기존에 추가된 시도 레이어가 있을 경우 제거
+    	    var sdLayer = map.getLayers().getArray().find(function(layer) {
+    	        return layer.get('name') === 'sdLayer';
+    	    });
+    	    if (sdLayer) {
+    	        map.removeLayer(sdLayer);
+    	    }
+    	    
+    	    // 기존에 추가된 시군구 레이어가 있을 경우 제거
+    	    var sggLayer = map.getLayers().getArray().find(function(layer) {
+    	        return layer.get('name') === 'sggLayer';
+    	    });
+    	    if (sggLayer) {
+    	        map.removeLayer(sggLayer);
+    	    }
+    	    
+    	    var sggValue = $("#sggSelect option:checked").val();
+    	    if (!sggValue) {
+    	        alert("시군구를 선택하세요.");
+    	        return;
+    	    }
+    	    var sdValue = $("#sdSelect option:checked").val(); 
+    	    if (!sdValue) { 
+    	        alert("시도를 선택하세요."); 
+    	        return;
+    	    }
+    	    
+    	    
    	    var legend = $("#legendSelect").val();
    	    var sggValue = $("#sggSelect option:checked").val(); /* 아래에서 cql 필터로 걸러줄거 선언 */
-
-       /*    map.removeLayer(sdLayer);
-           map.removeLayer(newSggLayer);*/
            
    	    var style = (legend === "1") ? 'bjd_equal' : 'bjd_natural';
    	    alert((legend === "1") ? "등간격 스타일을 적용합니다." : "네추럴 브레이크 스타일을 적용합니다.");
@@ -526,8 +583,9 @@ $('#sdSelect').on("change", function() {
    	        dataType: "json",
    	        data: { "legend": legend },
    	        success: function(result) {
-   	        	console.log(sggValue+"안녕");
+   	        	// console.log(sggValue+"안녕");
    	            var newBjdLayer = new ol.layer.Tile({
+   	                name: 'bjdLayer',
    	                source: new ol.source.TileWMS({
    	                	target: 'bjd_CQL',
    	                    url: 'http://localhost/geoserver/korea/wms?service=WMS',
@@ -548,41 +606,7 @@ $('#sdSelect').on("change", function() {
    				alert("범례실패");
    	        }
    	    });
-   	});
-	 
-    //--------------- 시군구 선택 시 법정동 불러오기 옵션 & 레이어 추가 ---------------//
-   /* $.ajax({
-        type: 'post',
-        url: '/getBjdList.do',
-        data: { 'sggValue': sggValue },
-        dataType: "json",
-        success: function(response) {
-            var bjdSelect = $('#bjdSelect');
-            bjdSelect.empty();
-            bjdSelect.append('<option value="">선택</option>');
-            $.each(response, function(index, item) {
-                bjdSelect.append('<option value="' + item.bjd_nm + '">' + item.bjd_nm + '</option>'); // 응답으로 받은 데이터로 옵션 추가
-            });
-            
-            // 기존에 추가된 시군구 레이어가 있다면 삭제
-            var sggLayerToRemove = map.getLayers().getArray().find(function(layer) {
-                return layer.get('name') === 'sggLayer';
-            });
-            if (sggLayerToRemove) {
-                map.removeLayer(sggLayerToRemove);
-            }
-
-
-
-         // 새로운 시군구 레이어 변수에 할당
-            newSggLayer.set('name', 'sggLayer'); // 레이어에 이름 설정
-            map.addLayer(newSggLayer);
-          
-        }
-    });*/
-
-  
-
+   	}); 
  });
   
 </script>
