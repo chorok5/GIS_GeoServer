@@ -492,6 +492,9 @@ $('#sdSelect').on("change", function() {
                  sggOpt += "<option value='"+ data[i].sgg_cd+"'>"+ data[i].sgg_nm+"</option>";
           	  }
         		sggDd.innerHTML = sggOpt;
+        		
+        		// 시도 선택 시 범례 선택 상자를 초기화
+                $('#legendSelect').val('default');
         	},
         	error : function(error){
                 alert("문제발생"+error);
