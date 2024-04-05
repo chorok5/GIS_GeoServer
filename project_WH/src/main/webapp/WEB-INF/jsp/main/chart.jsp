@@ -51,6 +51,24 @@
     var chart = new google.charts.Bar(document.getElementById('chart_div'));
     chart.draw(data, google.charts.Bar.convertOptions(options));
   }
+    
+    function drawTable(response) {
+        var tableHtml = '<table class="table"><thead style="position: sticky; top: 0; background-color: white; z-index: 1;"><tr><th>지역 이름</th><th>전기 사용량(kWh)</th></tr></thead><tbody>';
+
+        response.forEach(function(item) {
+           tableHtml += '<tr><td>' + item.sd_nm + '</td><td>'
+                 + item.total_used_kwh + '</td></tr>';
+        });
+
+        tableHtml += '</tbody></table>';
+        $('#table').html(tableHtml).css({
+           'max-height' : '450px',
+           'overflow-y' : 'auto',
+           'background-color' : 'white'
+        });
+
+     }
+
 	$('#showStatus').click(function() {
 		var sdCd1 = $('#loc').val();
 		var allSelected = $('#loc option:selected').attr('id') === 'all';
