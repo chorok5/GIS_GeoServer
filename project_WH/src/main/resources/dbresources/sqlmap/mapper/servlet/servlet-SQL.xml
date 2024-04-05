@@ -42,9 +42,31 @@
 	</insert>
 	
 	
-	<select id="getChartData" resultType="HashMap">
+<!-- 	<select id="getChartList" resultType="HashMap">
             SELECT sgg_cd, SUM(used_kwh) AS total_used_kwh
             FROM "TB_CARBON_B3" 
             GROUP BY sgg_cd;
-    </select>
+    </select> -->
+    
+   <select id="chartList" parameterType="String" resultType="Map">
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(used_kwh) OVER (PARTITION BY sd_nm) AS total_used_kwh 
+		FROM green123
+   </select>
+   
+   <select id="allselect" resultType="Map">
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(used_kwh) OVER (PARTITION BY sd_nm) AS total_used_kwh 
+		FROM green123
+   </select>
+   
+   <select id="sdSelectChart" resultType="Map" parameterType="String">
+   		SELECT DISTINCT sgg_nm AS sd_nm, sd_cd, used_kwh 
+		FROM green123
+		WHERE sd_cd = #{sdCd1};
+   </select>
+   
+   <select id="sdSelectTable" resultType="Map" parameterType="String">
+   		SELECT DISTINCT sgg_nm, sgg_cd, sd_nm, sd_cd, used_kwh  
+		FROM green123
+		WHERE sd_cd = #{sdCd1};
+   </select>
 </mapper>

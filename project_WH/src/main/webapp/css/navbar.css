@@ -52,12 +52,17 @@ ul li:hover a{
 /* 새로운 스타일 추가 */
 .sidebar ul li {
     transition: padding-left .4s;
+    position: relative; /* li 요소의 위치를 상대적으로 설정합니다. */
+    z-index: 1; /* 모든 메뉴의 z-index 값을 동일하게 설정합니다. */
 }
 .sidebar ul li.hide-menu {
     padding-left: 40px;
 }
 .sidebar ul li.show-menu {
     padding-left: 150px;
+}
+.show-menu{
+	z-index: 1;
 }
 /* 
 #check{

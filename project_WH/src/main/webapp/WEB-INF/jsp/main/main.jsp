@@ -10,22 +10,17 @@
 <html>
 <head>
 <title>지도</title>
-<script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500'">
 <link rel="stylesheet" type="text/css" href="/css/navbar.css">
-
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v6.15.1/build/ol.js"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <style type="text/css">
-
 #map-frame {
     height: 800px; /* 프레임의 높이 */
     width: 60%; /* 프레임의 너비 */
@@ -54,9 +49,9 @@ position: relative;
 	top: 100px;
 	left: 180px;
 	margin-right:0px;
-    width: 405px;
+    width: 500px;
     height: 900px;
-	background-color: white;
+	background-color: orange;
 	padding: 10px;
 	display: none;
 	/*z-index: 1000;  옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
@@ -123,13 +118,24 @@ position: relative;
 margin-top: 100px; /* 헤더의 아래에 배치하기 위해 헤더의 높이만큼 여백을 줍니다. */
 padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
  }
+ .fileform {
+ 	position: fixed;
+	top: 100px;
+	left: 180px;
+	margin-right:0px;
+    width: 500px;
+    height: 900px;
+	background-color: gray;
+	padding: 10px;
+	display: none;
+ }
 .dropArea {
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-top: 200px;
-    margin-left: 200px;
+    margin-left: 50px;
     width: 400px;
     height : 200px;
     border: 2px dashed #ccc;
@@ -208,13 +214,14 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
   <ul>
     <li><a href="#" id="carbonMap" >탄소지도</a></li>
     <li><a href="#" id="dataOption" >데이터</a></li>
-    <li><a href="#" id="statistic" >통계</a></li>
+    <li><a href="./chart.do" id="statistic" >통계</a></li>
   </ul>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- 탄소지도 내용 -->
 <script>
+
  document.getElementById("carbonMap").addEventListener("click", function() {
   var selectBoxContainer = document.getElementById("selectBoxContainer");
   if (selectBoxContainer.style.display === "block") {
@@ -226,15 +233,16 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
  
 //데이터 항목 클릭 이벤트 핸들러
  $("#dataOption").on("click", function(event) {
-     event.preventDefault(); // 기본 동작 방지
+   event.preventDefault(); // 기본 동작 방지
 
-     // 파일 업로드 폼 보이기
-     $(".dropArea").toggle();
-     $("#fileBtn").toggle(); // 파일 업로드 버튼도 함께 토글
-     $("#progressModal").hide();
-     $("#failModal").hide();
- }); 
-  </script>
+   // 파일 업로드 폼 보이기
+   $(".dropArea").toggle();
+   $("#fileBtn").toggle(); // 파일 업로드 버튼도 함께 토글
+   $(".fileform").toggle();
+   $("#progressModal").hide();
+   $("#failModal").hide();
+ });
+ </script>
 
     
 </div>
@@ -248,6 +256,7 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
 <!------------------------------------------------------------------------------------------------->
 
 <!-- 파일 업로드 폼 -->
+<div class=fileform>
 <div class="dropArea" id="dropArea">
 <form id="form" style="width:400px; height:800px;">
 	<label for="file" class="file-label"></label>
@@ -275,7 +284,7 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
     <p>파일 업로드에 실패했습니다.</p>
   </div>
 </div>
-     
+     </div>
 <script>
 // 파일 업로드 버튼 클릭 이벤트 핸들러
 $("#fileBtn").on("click", function() {
@@ -436,7 +445,6 @@ $('#carbonMap').on("click", function() {
             map.removeLayer(layer);
         }
     });
-
 });
     
 //<!----------------------------------------------------------------------->
@@ -586,7 +594,7 @@ $('#sdSelect').on("change", function() {
    	        map.removeLayer(sggLayer);
    	    }
 
-  	    if (sdValue === '0' || sggValue === '0' || legendValue === 'default') {
+  	    if (sdValue === '0' || sggValue === '0' || legendValue === '0') {
   	        alert("시도, 시군구, 범례를 모두 선택해주세요.");
   	        return;
   	    }
@@ -635,74 +643,13 @@ $('#sdSelect').on("change", function() {
 	});
 });
 </script>
+
 <div id="legendImageContainer1" style="display: none;">
     <img id="legendImage" src="img/bjd_equal.png" alt="등간격">
 </div>
 <div id="legendImageContainer2" style="display: none;">>
     <img id="legendImage" src="img/bjd_natural.png" alt="내추럴">
 </div>
-<!----------------------------------------------------------->
-<!----------------------- 차트 그리기 ----------------------->
-<!----------------------------------------------------------->
-<div id="chartContainer" style="width: 500px; height: 300px; margin-left:250px; margin-top:500px; background-color: white; display: none;">
-    <canvas id="myChart"></canvas>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-//메뉴 토글 기능 추가
-$('#statistic').on('click', function() {
-    // JSP 코드를 사용하여 chartData를 가져옵니다.
-    $('#chartContainer').toggle();
-    
-    var chartData = [
-        <c:forEach items="${chartData}" var="data">
-            {
-                sgg_cd: '<c:out value="${data.sgg_cd}"/>',
-                total_used_kwh: '<c:out value="${data.total_used_kwh}"/>'
-            },
-        </c:forEach>
-    ];
-
-    var labels = chartData.map(function(item) { return item['sgg_cd']; }); // 'sgg_cd' 키로 변경
-    var data = chartData.map(function(item) { return item['total_used_kwh']; }); // 'total_used_kwh' 키로 변경
-
-    console.log(labels);
-    console.log(data);
-    
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total Used kWh',
-                data: data, 
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    },
-                    gridLines: {
-                        display: false
-                    }
-                }],
-                xAxes: [{
-                    gridLines: {
-                        display: false
-                    }
-                }]
-            }
-        }
-    });
-});
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

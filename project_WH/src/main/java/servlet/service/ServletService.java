@@ -16,9 +16,18 @@ public interface ServletService {
 
 	List<Map<String, Object>> getBjdList(String sggValue);
 
-	List<Map<String, Object>> getChartData();
+	List<Map<String, Object>> getChartList();
 
 	List<Map<String, Object>> bjdList(String bjdValue);
+
+	List<Map<String, Object>> sdSelectChart(String sdCd1);
+
+	List<Map<String, Object>> sdSelectTable(String sdCd1);
+
+	List<Map<String, Object>> allselect();
+
+	List<Map<String, Object>> chartList();
+
 
 }
 
