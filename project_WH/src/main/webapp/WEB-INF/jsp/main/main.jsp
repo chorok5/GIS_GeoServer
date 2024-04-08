@@ -23,25 +23,23 @@
 
 <style type="text/css">
 .header {
-  position: fixed; /* 헤더를 맨 위에 고정시킵니다. */
-  top: 0; /* 화면의 맨 위에 헤더를 배치합니다. */
-  width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
-  background-color: #f0f0f0; /* 헤더의 배경색을 설정합니다. */
-  z-index: 1000; /* 다른 요소보다 위에 표시되도록 설정합니다. */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #f0f0f0;
+  z-index: 1000; 
   }
 .content {
-margin-top: 100px; /* 헤더의 아래에 배치하기 위해 헤더의 높이만큼 여백을 줍니다. */
-padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
+margin-top: 100px;
+padding: 20px; 
  }
 #legendImageContainer1,
 #legendImageContainer2 {
     position: fixed;
-    right: 100px; /* 원하는 우측 여백 설정 */
-    bottom: 100px; /* 원하는 아래 여백 설정 */
-    z-index: 9999; /* 다른 요소 위에 표시되도록 설정 */
+    right: 100px;
+    bottom: 100px;
+    z-index: 9999; 
 }
-
-
 </style>
 </head>
 <body>
@@ -61,13 +59,6 @@ padding: 20px; /* 컨텐츠 영역 주변에 여백을 줍니다. */
     <c:import url="sidebar.jsp" />
 </div>
 </div>
-
-<!-- 메뉴 3개가 겹치지 않고 하나씩 나타나게 하기 -->
-<script>
-
-</script>
-
-
 
 <div id="legendImageContainer1" style="display: none;">
     <img id="legendImage" src="img/bjd_equal.png" alt="등간격">

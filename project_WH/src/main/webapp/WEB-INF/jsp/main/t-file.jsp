@@ -20,15 +20,15 @@
 <title>t-file.do</title>
 <style>
 .modal {
-  display: none; /* 기본적으로 숨겨진 상태 */
-  position: fixed; /* 스크롤 영역에 영향을 받지 않음 */
-  z-index: 1000; /* 다른 요소 위에 표시 */
+  display: none;
+  position: fixed; 
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* 모달 창 내용이 넘치면 스크롤바 표시 */
-  background-color: rgba(0, 0, 0, 0.4); /* 배경 어둡게 */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); 
 }
 
 .modal-content {
@@ -64,8 +64,8 @@
   background-color: #B686F3;
   border-radius: 10px;
   padding: 5px;
-  text-align: center; /* 텍스트를 가운데 정렬 */
-  line-height: 20px; /* 수직 가운데 정렬 */
+  text-align: center;
+  line-height: 20px;
 }
  .fileform {
  	position: fixed;
@@ -74,7 +74,7 @@
 	margin-right:0px;
     width: 500px;
     height: 900px;
-	background-color: gray;
+	background-color: white;
 	padding: 10px;
 	display: none;
  }
@@ -102,7 +102,7 @@
 	display: none;
     margin-top: 10px;
     margin-left: 300px;
-    /* width: 100px; */
+
     padding: 10px 20px; 
     background-color: #4CAF50; 
     color: white; 

@@ -9,19 +9,19 @@
 
 <style type="text/css">
 #map-frame {
-    height: 800px; /* 프레임의 높이 */
-    width: 60%; /* 프레임의 너비 */
+    height: 800px;
+    width: 60%;  
     position: absolute;
     top: 90px;
     right : 10px;
-    border: 1px solid #ccc; /* 프레임에 테두리를 추가합니다. */
-    box-sizing: border-box; /* 테두리를 포함한 크기로 박스 모델 설정 */
-    overflow: hidden; /* 내용이 프레임을 넘어갈 경우 숨깁니다. */
+    border: 1px solid #ccc; 
+    box-sizing: border-box; 
+    overflow: hidden;
 }
 .map {
 position: relative;
-    height: 100%; /* 맵을 프레임의 전체 높이에 맞게 설정합니다. */
-    width: 100%; /* 맵을 프레임의 전체 너비에 맞게 설정합니다. */
+    height: 100%; 
+    width: 100%; 
 }
 .select-box {
 	margin: 0 20px;
@@ -29,7 +29,7 @@ position: relative;
 	margin-left: 50px;
 }
 .select-box select {
-  width: 200px; /* 모든 셀렉트 박스 너비 200px 설정 */
+  width: 200px; /* 모든 셀렉트 박스 너비 설정 */
 }
 .select-box-container {
 	position: fixed;
@@ -38,10 +38,9 @@ position: relative;
 	margin-right:0px;
     width: 500px;
     height: 900px;
-	background-color: orange;
+	background-color: white;
 	padding: 10px;
 	display: none;
-	/*z-index: 1000;  옵션 선택 부분을 다른 요소들보다 위로 올립니다. */
 }
 .insertbtn {
     position: absolute;
@@ -103,16 +102,16 @@ position: relative;
 $(document).ready(function() {
 	
 let map = new ol.Map(
-		{ // OpenLayer의 맵 객체를 생성한다.
-			target : 'map', // 맵 객체를 연결하기 위한 target으로 <div>의 id값을 지정해준다.
-			layers : [ // 지도에서 사용 할 레이어의 목록을 정희하는 공간이다.
+		{ 
+			target : 'map', 
+			layers : [ 
 			new ol.layer.Tile(
 		{
 		source : new ol.source.OSM(
 		{url : 'https://api.vworld.kr/req/wmts/1.0.0/5FEEDEDB-3705-3E32-8DC7-583B0B613B26/Base/{z}/{y}/{x}.png' // vworld의 지도를 가져온다.
 		})
 		}) ],
-	view : new ol.View({ // 지도가 보여 줄 중심좌표, 축소, 확대 등을 설정한다. 보통은 줌, 중심좌표를 설정하는 경우가 많다.
+	view : new ol.View({ 
 		center : ol.proj.fromLonLat([ 128.4,
 				35.7 ]),
 		zoom : 7
@@ -205,8 +204,8 @@ $('#sdSelect').on("change", function() {
     }
 
     var sidoCenter = ol.proj.fromLonLat([xCoordinate, yCoordinate]);
-    map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
-    map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
+    map.getView().setCenter(sidoCenter); 
+    map.getView().setZoom(10); 
     
 	// PARAM 추가해줘야 AJAX 로 PARAM 보내줄 수 있음
     newSdLayer.getSource().updateParams({'CQL_FILTER' : "sd_cd = " + sdValue});
@@ -278,7 +277,7 @@ $('#sdSelect').on("change", function() {
 	            serverType: 'geoserver',
 	        })
 	    });
-	    map.addLayer(newSggLayer); // 맵 객체에 새로운 시군구 레이어를 추가함
+	    map.addLayer(newSggLayer); 
 	});
      
 //<!----------------------------------------------------------->

@@ -16,8 +16,8 @@
     position: absolute;
     width: 500px;
     height: 500px;
-    top: 100px; /* 맵 상단에서의 거리 */
-    left: 10px; /* 맵 좌측에서의 거리 */
+    top: 100px;
+    left: 10px; 
 }
 </script>
 
@@ -25,15 +25,10 @@
 <script type="text/javascript">
 	$(function() {
 	
-     	// Load the Visualization API and the piechart package.
         google.charts.load('current', {'packages':['bar']});
 
-        // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(drawChart);
 		
-    // Callback that creates and populates a data table, 
-    // instantiates the pie chart, passes in the data and
-    // draws it.
     function drawChart(response) {
 		
     	  if (!response || response.length === 0) {
@@ -41,7 +36,6 @@
              return;
          }
 
-   	    // Create the data table.
    	    var data = new google.visualization.DataTable();
         data.addColumn('string', '지역 이름');
         data.addColumn('number', '전기 사용량(kWh)');
@@ -49,7 +43,6 @@
         	data.addRow([item.sd_nm, item.total_used_kwh]);
         });
 
-    // Set chart options
     var options = {
                 'title':'전체 전기 사용량',
                 'width':1000,
@@ -57,7 +50,6 @@
                 bars : 'horizontal'
         };
 
-    // Instantiate and draw our chart, passing in some options.
     var chart = new google.charts.Bar(document.getElementById('chart_div'));
     chart.draw(data, google.charts.Bar.convertOptions(options));
   }
