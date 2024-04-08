@@ -12,7 +12,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
+#chartContainer {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 100px; /* 맵 상단에서의 거리 */
+    left: 10px; /* 맵 좌측에서의 거리 */
+}
+</script>
 
+
+<script type="text/javascript">
 	$(function() {
 	
      	// Load the Visualization API and the piechart package.
@@ -27,7 +37,7 @@
     function drawChart(response) {
 		
     	  if (!response || response.length === 0) {
-             alert("시도를 먼저 선택해주세요.");
+             // alert("시도를 먼저 선택해주세요.");
              return;
          }
 
