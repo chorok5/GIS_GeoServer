@@ -197,13 +197,12 @@ $("#fileBtn").on("click", function() {
                 }, false);
                 return xhr;
             },
-
             success: function(response) {
             	// 파일 업로드 성공 또는 실패 시 파일 업로드 폼 리셋
                 $('#form')[0].reset();
             	
             	if (response.trim() === "success") {
-                	// 파일 업로드 성공 시 Swal.fire로 성공 알림창 띄우기
+            		// 파일 업로드 성공 시 Swal.fire로 성공 알림창 띄우기
                     Swal.fire({
                         icon: 'success',
                         title: '업로드 성공!',
