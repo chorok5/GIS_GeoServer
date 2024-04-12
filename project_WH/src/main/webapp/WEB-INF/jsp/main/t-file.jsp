@@ -115,6 +115,16 @@
 <!------------------------------------------------------------------------------------------------->
 <!--------------------------------------- 파일 업로드 --------------------------------------------->
 <!------------------------------------------------------------------------------------------------->
+<script>
+
+/* 
+if (dotName == 'txt') {
+} else {
+alert("텍스트 파일(.txt)만 업로드 가능합니다.");
+} */
+
+</script>
+
 
 <!-- 파일 업로드 폼 -->
 <div class=fileform>
@@ -173,16 +183,21 @@ $("#fileBtn").on("click", function() {
             contentType: false,
             processData: false,
             enctype: 'multipart/form-data',
+            
             xhr: function() {
                 var xhr = new window.XMLHttpRequest();
+                // progress 이벤트 리스너를 추가합니다.
                 xhr.upload.addEventListener("progress", function(evt) {
                     if (evt.lengthComputable) {
+                        // evt.lengthComputable이 참이면, 진행률을 계산할 수 있습니다.
                         var percentComplete = evt.loaded / evt.total;
+                        // 계산된 진행률을 바탕으로 .progress 요소의 너비를 조정합니다.
                         $(".progress").css("width", percentComplete * 100 + "%");
                     }
                 }, false);
                 return xhr;
             },
+
             success: function(response) {
             	// 파일 업로드 성공 또는 실패 시 파일 업로드 폼 리셋
                 $('#form')[0].reset();
@@ -223,5 +238,6 @@ $("#fileBtn").on("click", function() {
     }
 });
 </script>
+
 </body>
 </html>
