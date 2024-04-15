@@ -47,14 +47,11 @@
  
 <script>
 <!-- 탄소지도 내용 -->
- document.getElementById("carbonMap").addEventListener("click", function() {
-  var selectBoxContainer = document.getElementById("selectBoxContainer");
-  if (selectBoxContainer.style.display === "block") {
-    selectBoxContainer.style.display = "none";
-  } else {
-    selectBoxContainer.style.display = "block";
-  }
-});
+$("#carbonMap").on("click", function(event) {
+	   event.preventDefault();
+	   var selectBoxContainer = $("#selectBoxContainer");
+	   selectBoxContainer.toggle();
+	});
  
 //데이터 항목 클릭 이벤트 핸들러
  $("#dataOption").on("click", function(event) {
