@@ -6,8 +6,8 @@
 - 이 프로젝트는 학생들 모두 개인 프로젝트로 진행하였음
 
 ### 특징
-- Vworld API를 활용하여 배경지도를 불러올 수 있음.
-- 지도 내 시/도, 시/군/구 별 레이어 구분 가능.
+- 배경 지도는 Vworld API를 활용
+- 지도 내 시/도, 시/군/구 별 레이어 구분
 - 선택한 부분으로 이동 및 확대 기능
 - 웹에서 다운받은 데이터를 DB에 저장하기 위해 파일 업로드 기능 구현
 - 사용자 경험 개선을 위해 xhr을 활용하여 업로드 진행률에 따른 프로그레스 바 생성
@@ -48,3 +48,17 @@
 <img src="https://img.shields.io/badge/Qgis-589632?style=flat-square&logo=Qgis&logoColor=white">
 </div>
 <br>
+
+---
+
+
+### Screenshot
+<p>
+<h4>지도 레이어 구분</h4><br>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/0734a49d-c468-4519-b8aa-b05e1f92e45c" width="700"/><br><br>
+<h4>시도 별 통계 modal창</h4><br>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/72690a48-bf92-47d9-adc8-83e977ddd6ae" width="700"/><br><br>
+<h4>성공/실패에 따른 alert창</h4><br>
+<img src="https://github.com/chorok5/chorok5/assets/157563710/2ee9384b-937d-420e-b8c4-307f7e86263f" width="700"/><br>
+</p>
+
