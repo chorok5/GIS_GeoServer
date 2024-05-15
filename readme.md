@@ -1,10 +1,10 @@
 ## [GIS] 에너지 사용량 공간 지도 시스템
 
 ### 개요
-- GeoServer, OpenLayers, Vworld
 - 각 지역 별로 에너지 사용량을 시각화하는 웹 페이지 구현
 - GIS 분야 기업 프로젝트
 - 본 프로젝트는 학생들 모두 개인 프로젝트로 진행하였음
+- GeoServer, OpenLayers, Vworld
 
 ### 특징
 - 배경 지도는 Vworld API를 활용
