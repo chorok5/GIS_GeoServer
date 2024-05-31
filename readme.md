@@ -1,12 +1,12 @@
-## [GIS] 에너지 사용량 공간 지도 시스템
+## [GIS 프로젝트] 에너지 사용량 공간 지도 시스템
 
-### 개요
+### ✔ 개요
 - 각 지역 별로 에너지 사용량을 시각화하는 웹 페이지 구현
 - GIS 분야 기업 프로젝트
 - 본 프로젝트는 학생들 모두 개인 프로젝트로 진행하였음
 - GeoServer, OpenLayers, Vworld
 
-### 특징
+### ✔ 특징
 - 배경 지도는 Vworld API를 활용
 - 지도 내 시/도, 시/군/구 별 레이어 구분
 - 선택한 부분으로 이동 및 확대 기능
@@ -15,7 +15,7 @@
 - 업로드 된 데이터가 DB에 저장 성공/실패 여부에 따른 alert창
 - 구글 차트를 이용하여 지역 별 통계 그래프 표시
 
-### 기술 스택
+### 🛠 기술 스택 🛠
 <div style="display: flex; flex-wrap: wrap;">
   <img src="https://img.shields.io/badge/JAVA-3766AB?style=flat-square&logo=java&logoColor=black">
 </div>
@@ -52,14 +52,16 @@
 
 ---
 
-
-### Screenshot
+### 📸 Screenshot 📸
 <p>
-<h4>지도 레이어 구분</h4><br>
-<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/0734a49d-c468-4519-b8aa-b05e1f92e45c" width="700"/><br><br>
-<h4>시도 별 통계 modal창</h4><br>
-<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/72690a48-bf92-47d9-adc8-83e977ddd6ae" width="700"/><br><br>
-<h4>성공/실패에 따른 alert창</h4><br>
+<h4>개발 환경 및 사용 기술</h4>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/360465b5-ec3d-44a7-a43d-1d17451eb3ef" width="700"/><br>
+<h4>지도 레이어 구분</h4>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/62333dd5-115f-4dee-89f6-2cbeb618632d" width="700"/><br>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/3b5f694c-52c3-4b9f-b34e-d1561eda39fe" width="700"/><br>
+<h4>시도 별 통계 modal창</h4>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/72690a48-bf92-47d9-adc8-83e977ddd6ae" width="700"/><br>
+<h4>성공/실패에 따른 alert창</h4>
 <img src="https://github.com/chorok5/chorok5/assets/157563710/2ee9384b-937d-420e-b8c4-307f7e86263f" width="700"/><br>
 </p>
 
