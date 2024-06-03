@@ -58,7 +58,8 @@
 <img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/360465b5-ec3d-44a7-a43d-1d17451eb3ef" width="700"/><br>
 <h4>지도 레이어 구분</h4>
 <img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/62333dd5-115f-4dee-89f6-2cbeb618632d" width="700"/><br>
-<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/3b5f694c-52c3-4b9f-b34e-d1561eda39fe" width="700"/><br>
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/3b5f694c-52c3-4b9f-b34e-d1561eda39fe" width="700"/><br>  
+<img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/8c6b2187-d561-43d7-8cb5-280e60b3f780" width="700"/><br>  
 <h4>시도 별 통계 modal창</h4>
 <img src="https://github.com/chorok5/GIS_GeoServer/assets/157563710/72690a48-bf92-47d9-adc8-83e977ddd6ae" width="700"/><br>
 <h4>성공/실패에 따른 alert창</h4>
